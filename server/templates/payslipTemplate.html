@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payslip</title>
+  <style>
+    * {
+      font-family: "Times New Roman", serif;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 5px;
+      display : flex;
+      align-items : center;
+    }
+    .main-heading{
+      margin : auto;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .secondary-header{
+        display : flex;
+        justify-content : space-between;
+        width : 100%;
+    }
+
+    .secondary-header div {
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .info-table, .allowances, .deductions {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .info-table{
+      margin-bottom: 10px;
+    }
+
+    .info-table td, .allowances td, .deductions td {
+      border: 1px solid #000;
+      padding: 3px 5px;
+      vertical-align: top;
+    }
+
+    .allowances th, .deductions th, .footer-table th {
+      background: #f0f0f0;
+      font-weight: bold;
+      border: 1px solid #000;
+      padding: 3px 5px;
+      text-align: left;
+    }
+
+    .two-columns {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .column {
+      width: 48%;
+      display : flex;
+      flex-direction : column;
+      justify-content : space-between;
+    }
+
+    .footer-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .footer-table td {
+      border: 1px solid #000;
+      padding: 3px 5px;
+    }
+
+    .note {
+      font-size: 1rem;
+      font-weight : bold;
+      border : 1px solid #000;
+      align-self : flex-end;
+      padding : 3px;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+    img{
+      height : 100px;
+      width : 100px;
+    }
+    .info-table th{
+      background: #f0f0f0;
+      font-weight: bold;
+      border: 1px solid #000;
+      padding: 3px 5px;
+      text-align: left;
+      display : inline;
+    }
+    .info-table tr{
+      display : flex;
+    }
+    .info-table td{
+      flex : 1;
+    }
+    .allowances .pay-and-allow, .deductions .deductions-heading{
+      text-align : center;
+      font-size : 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+      <div>
+        <img src="logo.png" alt="uaf logo">
+      </div>
+    <div class="main-heading">
+        <h2>UNIVERSITY OF AGRICULTURE, FAISALABAD</h2>
+        <div>Sub-Campus Burewala-Vehari</div>
+    </div>
+  </div>
+<div class="secondary-header">
+    <div>Treasurer's Office</div>
+    <div>Section: Pre-Audit and Disbursement</div>
+  <div>
+    Pay Slip <span id="month"></span>-<span id="year"></span>
+  </div>
+</div>
+
+  <table class="info-table">
+    <tr>
+      <th>Pin Cod:</th>
+      <td id="info-pin-cod"></td>
+      <th>Name:</th>
+      <td id="info-name"></td>
+      <th>Designation:</th>
+      <td id="info-designation"></td>
+    </tr>
+    <tr>
+      <th>BPS:</th>
+      <td id="info-bps"></td>
+      <th>Nature of Appointment:</th>
+      <td id="info-appointment"></td>
+      <th>Account No:</th>
+      <td id="info-account"></td>
+    </tr>
+    <tr>
+      <th>CNIC No:</th>
+      <td id="info-cnic"></td>
+      <th>Date of Birth:</th>
+      <td id="info-dob"></td>
+      <th>Date of Joining:</th>
+      <td id="info-doj"></td>
+      <th>Date of Retirement:</th>
+      <td id="info-dor"></td>
+    </tr>
+  </table>
+
+  <div class="two-columns">
+    <div class="column">
+      <table class="allowances">
+        <tr><th colspan="2" class="pay-and-allow">Pay and Allowances</th></tr>
+      </table>
+    </div>
+
+    <div class="column">
+      <table class="deductions"> <tr><th colspan="2" class="deductions-heading">Deductions</th></tr>
+      </table>
+
+  <div class="note">
+    This is a system generated document and don't need any sign/stamp.
+  </div>
+
+  <table class="footer-table">
+    <tr>
+      <th>Gross Pay:</th><td id="footer-gross"></td>
+      <th>Net Pay:</th><td id="footer-net"></td>
+    </tr>
+  </table>
+    </div>
+  </div>
+</body>
+</html>

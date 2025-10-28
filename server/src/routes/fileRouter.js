@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { generatePayslip } from '../services/payslipService.js';
 import normalizeData from '../services/dataNormalizationService.js';
+import generateTemplate from '../services/templateCreationService.js';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -33,9 +34,16 @@ fileRouter.post('/', upload.single('file'), (req, res) => {
 
     if (!fs.existsSync('generated')) fs.mkdirSync('generated');
 
-    normalizedData.forEach((employee) => {
-        generatePayslip(employee);
-    });
+    generateTemplate(normalizedData[0]);
+
+    generatePayslip(normalizedData[0], 'generated');
+
+    //normalizedData.forEach((employee) => {
+    //    generatePayslip(
+    //        employee,
+    //        '/home/rehman/coding/repos/portal/server/generated/',
+    //    );
+    //});
 
     res.json({
         message: 'Payslips generated successfully',
