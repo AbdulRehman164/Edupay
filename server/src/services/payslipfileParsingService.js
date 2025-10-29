@@ -1,6 +1,7 @@
-function normalizeData(data) {
-    const { headers, dataRows } = getHeadersAndData(data);
-    const cleanData = getCleanData(headers, dataRows);
+import getNormalizedData from '../utils/getNormalizedData.js';
+
+function parsePayslipfile(data) {
+    const cleanData = getNormalizedData(data);
     const finalData = getFinalData(cleanData);
     return fixColumnNames(finalData);
 }
@@ -85,45 +86,4 @@ function getCleanData(headers, dataRows) {
     return clean;
 }
 
-function getHeadersAndData(data) {
-    const dataIndex = getDataIndex(data);
-    let headers = {};
-    for (let i = 0; i < dataIndex; i++) {
-        headers = { ...headers, ...data[i] };
-    }
-    headers = getCleanHeaders(headers);
-
-    const dataRows = [...data];
-    dataRows.splice(0, dataIndex);
-    return { headers, dataRows };
-}
-
-function getCleanHeaders(headers) {
-    const cleanedHeaders = {};
-    Object.keys(headers).forEach((key) => {
-        const originalString = headers[key];
-        const cleanedString = originalString
-            .replace(/[\n\r]+/g, '')
-            .replace(/\s+/g, ' ');
-        cleanedHeaders[key] = cleanedString;
-    });
-    return cleanedHeaders;
-}
-
-function getDataIndex(data) {
-    let dataIndex;
-    let found = false;
-    data.forEach((row, index) => {
-        if (found) return;
-        Object.keys(row).forEach((key) => {
-            if (!isNaN(Number(row[key]))) {
-                dataIndex = index;
-                found = true;
-                return;
-            }
-        });
-    });
-    return dataIndex;
-}
-
-export default normalizeData;
+export default parsePayslipfile;

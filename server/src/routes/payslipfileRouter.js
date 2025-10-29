@@ -4,26 +4,20 @@ import * as XLSX from 'xlsx';
 import fs from 'fs';
 import path from 'path';
 import { generatePayslip } from '../services/payslipService.js';
-import normalizeData from '../services/dataNormalizationService.js';
 import generateTemplate from '../services/templateCreationService.js';
+import parsePayslipfile from '../services/payslipfileParsingService.js';
+import upload from '../middleware/upload.js';
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, Date.now() + '_' + file.originalname),
-});
+const payslipfileRouter = Router();
 
-const upload = multer({ storage });
-
-const fileRouter = Router();
-
-fileRouter.post('/', upload.single('file'), (req, res) => {
+payslipfileRouter.post('/', upload.single('file'), (req, res) => {
     const filename = path.join('uploads', req.file.filename);
     const fileBuffer = fs.readFileSync(filename);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(sheet);
-    const normalizedData = normalizeData(data);
+    const normalizedData = parsePayslipfile(data);
 
     // for devleopment only
     // TODO: Remove later
@@ -51,4 +45,4 @@ fileRouter.post('/', upload.single('file'), (req, res) => {
     });
 });
 
-export default fileRouter;
+export default payslipfileRouter;
