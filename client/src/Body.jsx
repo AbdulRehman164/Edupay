@@ -7,10 +7,13 @@ const Body = () => {
         const formData = new FormData();
         formData.append('file', file);
         (async function () {
-            const response = await fetch('http://localhost:3000/payslipfile', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch(
+                'http://localhost:3000/upload/payslipfile',
+                {
+                    method: 'POST',
+                    body: formData,
+                },
+            );
             if (response.ok) {
                 alert('File uploaded successfully.');
             } else {

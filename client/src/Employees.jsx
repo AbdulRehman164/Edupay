@@ -7,10 +7,13 @@ const Employees = () => {
         const formData = new FormData();
         formData.append('file', file);
         (async function () {
-            const response = await fetch('http://localhost:3000/employeefile', {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch(
+                'http://localhost:3000/upload/employeefile',
+                {
+                    method: 'POST',
+                    body: formData,
+                },
+            );
             if (response.ok) {
                 alert('File uploaded successfully.');
             } else {
