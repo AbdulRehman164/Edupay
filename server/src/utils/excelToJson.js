@@ -1,3 +1,6 @@
+import * as XLSX from 'xlsx';
+import fs from 'fs';
+
 function getDataIndex(data) {
     let dataIndex;
     let found = false;
@@ -19,6 +22,7 @@ function getCleanHeaders(headers) {
     Object.keys(headers).forEach((key) => {
         const originalString = headers[key];
         const cleanedString = originalString
+            .trim()
             .replace(/[\n\r]+/g, '')
             .replace(/\s+/g, ' ');
         cleanedHeaders[key] = cleanedString;
@@ -26,7 +30,7 @@ function getCleanHeaders(headers) {
     return cleanedHeaders;
 }
 
-function getCleanData(headers, dataRows) {
+function mapHeadersAndData(headers, dataRows) {
     const clean = [];
     dataRows.forEach((row) => {
         const rowObject = {};
@@ -51,7 +55,37 @@ function getHeadersAndData(data) {
     return { headers, dataRows };
 }
 
-export default function getNomralizedData(data) {
+function getJsonFromLegacyExcel(data) {
     const { headers, dataRows } = getHeadersAndData(data);
-    return getCleanData(headers, dataRows);
+    return mapHeadersAndData(headers, dataRows);
+}
+
+function detectExcelType(buffer) {
+    const signature = buffer.slice(0, 4).toString('hex');
+
+    if (signature === 'd0cf11e0') return 'xls';
+    if (signature === '504b0304') return 'xlsx';
+
+    return 'unknown';
+}
+
+export default function excelToJson(filename) {
+    const fileBuffer = fs.readFileSync(filename);
+    const fileType = detectExcelType(fileBuffer);
+    if (fileType === 'unknown') {
+        throw new AppError('The file is corrupted or unknown format', 400);
+    }
+
+    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+
+    if (workbook.SheetNames.length > 1) {
+        throw new AppError('File contains multiple Sheets', 400);
+    }
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(sheet);
+    if (fileType === 'xls') {
+        return getJsonFromLegacyExcel(data);
+    }
+    return data;
 }
