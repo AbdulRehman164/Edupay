@@ -7,18 +7,15 @@ const Body = () => {
         const formData = new FormData();
         formData.append('file', file);
         (async function () {
-            const response = await fetch(
+            const res = await fetch(
                 'http://localhost:3000/upload/payslipfile',
                 {
                     method: 'POST',
                     body: formData,
                 },
             );
-            if (response.ok) {
-                alert('File uploaded successfully.');
-            } else {
-                alert('File upload failed.');
-            }
+            const json = await res.json();
+            console.log(json);
         })();
     }, [file]);
     return (

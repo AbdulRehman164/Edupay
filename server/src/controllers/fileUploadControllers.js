@@ -2,16 +2,24 @@ import processEmployeefile from '../services/employeefileService.js';
 import processPayslipFile from '../services/payslipService.js';
 import path from 'path';
 
-async function employeefileController(req, res) {
-    const filename = path.join('uploads', req.file.filename);
-    const response = await processEmployeefile(filename);
-    console.log(response);
-    res.json(response);
+async function employeefileController(req, res, next) {
+    try {
+        const filename = path.join('uploads', req.file.filename);
+        await processEmployeefile(filename);
+        res.json({ message: 'Uploaded sucessfully.' });
+    } catch (e) {
+        next(e);
+    }
 }
 
-function payslipfileController(req, res) {
-    const filename = path.join('uploads', req.file.filename);
-    processPayslipFile(filename);
+async function payslipfileController(req, res, next) {
+    try {
+        const filename = path.join('uploads', req.file.filename);
+        await processPayslipFile(filename);
+        res.json({ message: 'Uploaded successfully.' });
+    } catch (e) {
+        next(e);
+    }
 }
 
 export { employeefileController, payslipfileController };

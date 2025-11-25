@@ -30,11 +30,9 @@ function validateData(data) {
 }
 
 async function processEmployeefile(filename) {
-    const json = excelToJson(filename);
-    const normalizedData = normalizeEmployeeData(json);
+    const normalizedData = normalizeEmployeeData(excelToJson(filename));
     validateData(normalizedData);
-    const insertToDbRes = await employeeRepository.insertToDb(normalizedData);
-    return insertToDbRes;
+    await employeeRepository.insertToDb(normalizedData);
 }
 
 export default processEmployeefile;
