@@ -72,6 +72,28 @@ const Body = () => {
                 Generate Payslips
             </button>
             <div>{jobStatus}</div>
+            {jobStatus === 'completed' ? (
+                <button
+                    onClick={async () => {
+                        const res = await fetch(
+                            `http://localhost:3000/api/download/${uploadId}`,
+                            {
+                                method: 'GET',
+                            },
+                        );
+                        console.log(res);
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'payslips.zip';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }}
+                >
+                    Download
+                </button>
+            ) : null}
         </div>
     );
 };

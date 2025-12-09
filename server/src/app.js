@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import errorHandler from './middleware/errorHandler.js';
 import generatePayslipController from './controllers/generatePayslipController.js';
 import jobStatusController from './controllers/jobStatusController.js';
+import fileDownloadController from './controllers/fileDownloadController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,7 @@ app.use('/static', express.static(path.join(__dirname, '../templates')));
 app.use('/api/upload', uploadRoute);
 app.post('/api/generatepayslips', generatePayslipController);
 app.get('/api/job-status/:id', jobStatusController);
+app.get('/api/download/:id', fileDownloadController);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
