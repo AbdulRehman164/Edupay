@@ -39,7 +39,8 @@ function validateData(data) {
 async function processPayslipFile(filename) {
     const normalizedData = normalizePayslipData(excelToJson(filename));
     validateData(normalizedData);
-    await payslipRepository.insertToDb(normalizedData);
+    const uploadId = await payslipRepository.insertToDb(normalizedData);
+    return uploadId;
 }
 
 export default processPayslipFile;

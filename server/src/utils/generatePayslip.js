@@ -1,80 +1,131 @@
 import * as cheerio from 'cheerio';
-import getMonthAndYear from './getMonthAndYear.js';
 import path from 'path';
-import html_to_pdf from 'html-pdf-node';
+import puppeteer from 'puppeteer';
 import fs from 'fs';
+import getPayslipsFromDb from '../Repositories/generatePayslipsRepository.js';
+import archiver from 'archiver';
 
-function generateTemplate({ payslipData, employeeData }) {
+const HTML_TEMPLATE = fs.readFileSync('templates/payslipTemplate.html', 'utf8');
+
+function generateTemplate({ payslip, employee }) {
     const ASSET_BASE = process.env.PDF_ASSET_BASE_URL;
-    const html = fs.readFileSync('templates/payslipTemplate.html', 'utf8');
-    const $ = cheerio.load(html);
+    const $ = cheerio.load(HTML_TEMPLATE);
     const allowancesTable = $('table.allowances');
-    const { month, year } = getMonthAndYear();
 
     $('#logo').attr('src', `${ASSET_BASE}/static/logo.png`);
 
-    $('#info-pin-code').text(employeeData.pin_code);
-    $('#info-name').text(employeeData.name);
-    $('#info-designation').text(employeeData.designation);
-    $('#info-bps').text(employeeData.bps);
-    $('#info-appointment').text(employeeData.nature_of_appointment);
-    $('#info-account').text(employeeData.account_no);
-    $('#info-cnic').text(employeeData.cnic_no);
-    $('#info-dob').text(employeeData.date_of_birth);
-    $('#info-doj').text(employeeData.date_of_joining);
-    $('#info-dor').text(employeeData.date_of_retirement);
+    $('#info-pin-code').text(employee?.pin_code);
+    $('#info-name').text(employee?.name);
+    $('#info-designation').text(employee?.designation);
+    $('#info-bps').text(employee?.bps);
+    $('#info-appointment').text(employee?.nature_of_appointment);
+    $('#info-account').text(employee?.account_no);
+    $('#info-cnic').text(employee?.cnic_no);
+    $('#info-dob').text(employee?.date_of_birth);
+    $('#info-doj').text(employee?.date_of_joining);
+    $('#info-dor').text(employee?.date_of_retirement);
 
-    Object.keys(payslipData.payAndAllowances).forEach((key) => {
-        const tr = `<tr><th>${key}</th><td>${payslipData.payAndAllowances[key]}</td></tr>`;
+    const { allowances, deductions } = payslip.json;
+
+    Object.keys(allowances).forEach((key) => {
+        const tr = `<tr><th>${key}</th><td>${allowances[key]}</td></tr>`;
         allowancesTable.append(tr);
     });
 
     const deductionsTable = $('table.deductions');
-    Object.keys(payslipData.deductions).forEach((key) => {
-        const tr = `<tr><th>${key}</th><td>${payslipData.deductions[key]}</td></tr>`;
+    Object.keys(deductions).forEach((key) => {
+        const tr = `<tr><th>${key}</th><td>${deductions[key]}</td></tr>`;
         deductionsTable.append(tr);
     });
 
     allowancesTable.append(
-        `<tr><th>Total Allowances</th><td>${payslipData?.summaries?.['Total Allowances']}</td></tr>`,
+        `<tr><th>Total Allowances</th><td>${payslip?.total_allowances}</td></tr>`,
     );
 
     deductionsTable.append(
-        `<tr><th>Total Deductions</th><td>${payslipData?.summaries?.['Total Deductions']}</td></tr>`,
+        `<tr><th>Total Deductions</th><td>${payslip?.total_deductions}</td></tr>`,
     );
 
-    $('#footer-gross').text(payslipData?.summaries?.['Gross Salary']);
-    $('#footer-net').text(payslipData?.summaries?.['Net Amount']);
+    $('#footer-gross').text(payslip?.gross_pay);
+    $('#footer-net').text(payslip?.net_pay);
 
-    $('#month').text(month);
-    $('#year').text(year);
+    $('#month').text(payslip?.month);
+    $('#year').text(payslip?.year);
 
     return $.html();
 }
 
+let browser;
+async function getBrowser() {
+    if (!browser) {
+        browser = await puppeteer.launch({ headless: true });
+    }
+    return browser;
+}
+
+export async function closeBrowser() {
+    if (browser) await browser.close();
+    browser = null;
+}
+
 async function generatePdf(html, outputPath, filename) {
-    const file = { content: html };
-    const options = {
+    await getBrowser();
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const buffer = await page.pdf({
         format: 'A4',
         printBackground: true,
         margin: { top: '20mm', bottom: '20mm' },
-    };
-
-    const pdfBuffer = await html_to_pdf.generatePdf(file, options);
+    });
     const filePath = path.join(outputPath, `${filename}.pdf`);
-    fs.writeFileSync(filePath, pdfBuffer);
-
-    console.log(`PDF generated: ${filePath}`);
+    fs.writeFileSync(filePath, buffer);
+    await page.close();
+    console.log(`Pdf generated: ${filePath}`);
     return filePath;
 }
 
-async function generatePayslip(data) {
-    const template = generateTemplate(data);
-    return await generatePdf(
-        template,
-        'generated',
-        data?.employeeData?.cnic_no,
-    );
+async function generatePayslips(uploadId) {
+    const payslips = await getPayslipsFromDb(uploadId);
+    const template = generateTemplate(payslips[0]);
+    let files = [];
+    for (let i = 0; i < payslips.length; i += 30) {
+        const batch = payslips.slice(i, i + 30);
+
+        for (const e of batch) {
+            files.push(
+                await generatePdf(
+                    template,
+                    'generated',
+                    `${e?.employee?.name}_${e?.employee?.cnic_no}_${e?.payslip?.month}_${e?.payslip?.year}`,
+                ),
+            );
+        }
+    }
+    await closeBrowser();
+    await zipFiles(`generated/${uploadId}`, files);
+    for (const file of files) {
+        await fs.promises.rm(file, { force: true });
+    }
+    return uploadId;
 }
 
-export default generatePayslip;
+export async function zipFiles(outputZipPath, files) {
+    return new Promise((resolve, reject) => {
+        const output = fs.createWriteStream(outputZipPath);
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        output.on('close', () => resolve(outputZipPath));
+        archive.on('error', (err) => reject(err));
+
+        archive.pipe(output);
+
+        files.forEach((file) => {
+            const fileName = file.split('/').pop();
+            archive.file(file, { name: fileName });
+        });
+
+        archive.finalize();
+    });
+}
+
+export default generatePayslips;

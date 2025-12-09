@@ -8,7 +8,7 @@ const Employees = () => {
         formData.append('file', file);
         (async function () {
             const res = await fetch(
-                'http://localhost:3000/upload/employeefile',
+                'http://localhost:3000/api/upload/employeefile',
                 {
                     method: 'POST',
                     body: formData,
