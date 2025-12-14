@@ -2,6 +2,26 @@ import { useState, useEffect } from 'react';
 const Employees = () => {
     const [file, setFile] = useState(null);
     const [fileTypeError, setFileTypeError] = useState(false);
+    const [paginationData, setPaginationData] = useState({
+        employees: [],
+        page: 1,
+        totalPages: 1,
+        isLoading: false,
+    });
+    const [currentPage, setCurrentPage] = useState(1);
+    useEffect(() => {
+        (async () => {
+            const res = await fetch(
+                `http://localhost:3000/api/employees?page=${currentPage}`,
+                {
+                    method: 'GET',
+                },
+            );
+            const json = await res.json();
+            setPaginationData({ ...json, isLoading: false });
+            console.log(json);
+        })();
+    }, [currentPage]);
     useEffect(() => {
         if (!file) return;
         const formData = new FormData();
@@ -15,7 +35,6 @@ const Employees = () => {
                 },
             );
             const json = await res.json();
-            console.log(json);
         })();
     }, [file]);
     return (
@@ -33,6 +52,34 @@ const Employees = () => {
                 }}
             />
             {fileTypeError ? <div>Please select the excel file.</div> : null}
+            <div>
+                {!paginationData.isLoading
+                    ? paginationData.employees.map((employee) => (
+                          <div key={employee.id} className="flex">
+                              <div>{employee.name}</div>
+                              <div>{employee.cnic_no}</div>
+                          </div>
+                      ))
+                    : null}
+            </div>
+
+            <button
+                onClick={() => {
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                }}
+            >
+                prev
+            </button>
+
+            <button
+                onClick={() => {
+                    setCurrentPage((prev) =>
+                        Math.min(prev + 1, paginationData?.totalPages),
+                    );
+                }}
+            >
+                next
+            </button>
         </div>
     );
 };

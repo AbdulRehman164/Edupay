@@ -8,6 +8,7 @@ import errorHandler from './middleware/errorHandler.js';
 import generatePayslipController from './controllers/generatePayslipController.js';
 import jobStatusController from './controllers/jobStatusController.js';
 import fileDownloadController from './controllers/fileDownloadController.js';
+import getEmployeesController from './controllers/getEmployeesController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,6 +23,7 @@ app.use('/api/upload', uploadRoute);
 app.post('/api/generatepayslips', generatePayslipController);
 app.get('/api/job-status/:id', jobStatusController);
 app.get('/api/download/:id', fileDownloadController);
+app.get('/api/employees/', getEmployeesController);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;

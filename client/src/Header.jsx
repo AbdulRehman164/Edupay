@@ -2,8 +2,8 @@ import { Link } from 'react-router';
 const Header = () => {
     return (
         <header>
-            <nav>
-                <ul>
+            <nav className="bg-teal-400 text-white font-bold p-4">
+                <ul className="flex gap-5">
                     <li>
                         <Link to="/">Home</Link>
                     </li>
