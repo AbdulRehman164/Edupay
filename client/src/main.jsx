@@ -5,6 +5,7 @@ import './index.css';
 import App from './App.jsx';
 import Body from './Body';
 import Employees from './Employees';
+import EditEmployee from './EditEmployee.jsx';
 
 const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
             {
                 path: '/employees',
                 element: <Employees />,
+            },
+            {
+                path: '/employees/:cnic',
+                element: <EditEmployee />,
             },
         ],
     },

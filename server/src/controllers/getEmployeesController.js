@@ -1,4 +1,11 @@
 import pool from '../config/db.js';
+import employeeRepository from '../Repositories/employeeRepository.js';
+
+async function getEmployeeByCnicController(req, res) {
+    const cnic = req.params.cnic;
+    const employee = await employeeRepository.getEmployeeByCnic(cnic);
+    res.json(employee);
+}
 
 async function getEmployeesController(req, res) {
     const page = parseInt(req.query.page) || 1;
@@ -40,4 +47,20 @@ async function getEmployeesController(req, res) {
     }
 }
 
-export default getEmployeesController;
+async function patchEmployeeController(req, res) {
+    const id = req.params.id;
+    const body = req.body;
+    const result = await employeeRepository.patchEmployee(id, body);
+    console.log(result);
+    if (result.code === 400) {
+        res.status(400).send(result);
+        return;
+    }
+    res.send(result);
+}
+
+export {
+    getEmployeesController,
+    getEmployeeByCnicController,
+    patchEmployeeController,
+};

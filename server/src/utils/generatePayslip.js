@@ -4,6 +4,7 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 import getPayslipsFromDb from '../Repositories/generatePayslipsRepository.js';
 import archiver from 'archiver';
+import AppError from './AppError.js';
 
 const HTML_TEMPLATE = fs.readFileSync('templates/payslipTemplate.html', 'utf8');
 
