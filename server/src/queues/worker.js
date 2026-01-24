@@ -1,7 +1,10 @@
 import { Worker } from 'bullmq';
 import { queueName } from './index.js';
-import generatePayslips from '../utils/generatePayslip.js';
 import dotenv from 'dotenv';
+import {
+    generateForUpload,
+    generateForIdentifiers,
+} from '../services/PayslipGeneration.service.js';
 dotenv.config();
 
 const connection = { host: '127.0.0.1', port: 6379 };
@@ -10,8 +13,11 @@ const worker = new Worker(
     queueName,
     async (job) => {
         if (job.name === 'generate-for-upload') {
-            const { uploadId } = job.data;
-            await generatePayslips(uploadId);
+            const { uploadId, downloadId } = job.data;
+            await generateForUpload(uploadId, downloadId);
+        } else if (job.name === 'generate-for-identifier') {
+            const { identifiers, downloadId } = job.data;
+            await generateForIdentifiers(identifiers, downloadId);
         }
     },
     { connection, concurrency: 2 },

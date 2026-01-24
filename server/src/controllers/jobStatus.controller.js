@@ -5,7 +5,7 @@ async function jobStatusController(req, res) {
 
     const job = await payslipQueue.getJob(id);
 
-    if (!job) return res.status(404).json({ status: 'not found' });
+    if (!job) return res.status(404).json({ state: 'not found' });
 
     const state = await job.getState();
     res.json({ state });

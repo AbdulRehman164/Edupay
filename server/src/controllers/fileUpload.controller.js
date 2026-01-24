@@ -1,5 +1,5 @@
-import processEmployeefile from '../services/employeefileService.js';
-import processPayslipFile from '../services/payslipService.js';
+import processEmployeefile from '../services/employeeIngestion.service.js';
+import processPayslipFile from '../services/payslipIngestion.service.js';
 import path from 'path';
 
 async function employeefileController(req, res, next) {

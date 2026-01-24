@@ -99,10 +99,10 @@ const EditEmployee = () => {
     useEffect(() => {
         (async function () {
             const res = await fetch(
-                `http://localhost:3000/api/employees/${cnic}`,
+                `http://localhost:3000/api/employees?search=${cnic}`,
             );
             const json = await res.json();
-            const { id, ...rest } = json;
+            const { id, ...rest } = json.employees[0];
             setEmployee(rest);
             setEmployeeId(id);
             setOldEmployee(rest);
@@ -142,7 +142,10 @@ const EditEmployee = () => {
                 setTimeout(() => setShowSuccess(false), 3000);
                 setOldEmployee(employee);
             } else {
-                setErrors((prev) => ({ ...prev, [json.field]: json.message }));
+                setErrors((prev) => ({
+                    ...prev,
+                    [json?.details?.field]: json?.message,
+                }));
             }
         })();
     };

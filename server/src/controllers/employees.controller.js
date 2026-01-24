@@ -1,16 +1,11 @@
 import pool from '../config/db.js';
-import employeeRepository from '../Repositories/employeeRepository.js';
-
-async function getEmployeeByCnicController(req, res) {
-    const cnic = req.params.cnic;
-    const employee = await employeeRepository.getEmployeeByCnic(cnic);
-    res.json(employee);
-}
+import { updateEmployee } from '../services/employeeUpdate.service.js';
+import AppError from '../utils/AppError.js';
 
 async function getEmployeesController(req, res) {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 15;
-    const search = req.query.search?.trim || '';
+    const search = req.query.search?.trim() || '';
     const offset = (page - 1) * limit;
 
     let employeesQuery = 'SELECT * FROM employees';
@@ -47,20 +42,21 @@ async function getEmployeesController(req, res) {
     }
 }
 
-async function patchEmployeeController(req, res) {
-    const id = req.params.id;
-    const body = req.body;
-    const result = await employeeRepository.patchEmployee(id, body);
-    console.log(result);
-    if (result.code === 400) {
-        res.status(400).send(result);
-        return;
+async function patchEmployeesController(req, res) {
+    try {
+        const id = req.params.id;
+        const data = req.body;
+        await updateEmployee(id, data);
+        res.json({ message: 'Updated Successfully' });
+    } catch (e) {
+        if (e.code === '23505') {
+            throw new AppError('CNIC already exists.', 400, {
+                field: 'cnic_no',
+            });
+        } else {
+            throw e;
+        }
     }
-    res.send(result);
 }
 
-export {
-    getEmployeesController,
-    getEmployeeByCnicController,
-    patchEmployeeController,
-};
+export { getEmployeesController, patchEmployeesController };

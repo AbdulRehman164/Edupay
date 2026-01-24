@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import upload from '../middleware/upload.js';
+import upload from '../middleware/upload.middleware.js';
 import {
     employeefileController,
     payslipfileController,
-} from '../controllers/fileUploadControllers.js';
+} from '../controllers/fileUpload.controller.js';
 
 const uploadRoute = Router();
 

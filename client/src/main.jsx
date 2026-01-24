@@ -6,6 +6,8 @@ import App from './App.jsx';
 import Body from './Body';
 import Employees from './Employees';
 import EditEmployee from './EditEmployee.jsx';
+import Payslips from './Payslips.jsx';
+import EmployeePayslips from './EmployeePayslips.jsx';
 
 const router = createBrowserRouter([
     {
@@ -23,6 +25,16 @@ const router = createBrowserRouter([
             {
                 path: '/employees/:cnic',
                 element: <EditEmployee />,
+            },
+
+            {
+                path: '/payslips',
+                element: <Payslips />,
+            },
+
+            {
+                path: '/payslips/:cnic',
+                element: <EmployeePayslips />,
             },
         ],
     },

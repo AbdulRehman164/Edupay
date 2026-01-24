@@ -1,14 +1,13 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import uploadRoute from './routes/uploadRoute.js';
+import uploadRoute from './routes/upload.route.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import errorHandler from './middleware/errorHandler.js';
-import generatePayslipController from './controllers/generatePayslipController.js';
-import jobStatusController from './controllers/jobStatusController.js';
-import fileDownloadController from './controllers/fileDownloadController.js';
-import employeeRoute from './routes/employeeRoute.js';
+import errorHandler from './middleware/errorHandler.middleware.js';
+import jobStatusController from './controllers/jobStatus.controller.js';
+import employeeRoute from './routes/employee.route.js';
+import payslipsRoute from './routes/payslips.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,9 +19,8 @@ app.use(express.json());
 app.use(cors());
 app.use('/static', express.static(path.join(__dirname, '../templates')));
 app.use('/api/upload', uploadRoute);
-app.post('/api/generatepayslips', generatePayslipController);
+app.use('/api/payslips', payslipsRoute);
 app.get('/api/job-status/:id', jobStatusController);
-app.get('/api/download/:id', fileDownloadController);
 app.use('/api/employees/', employeeRoute);
 app.use(errorHandler);
 

@@ -1,7 +1,5 @@
 import { normalizeEmployeeData } from '../utils/normalizeData.js';
-import employeeRepository from '../Repositories/employeeRepository.js';
-import * as XLSX from 'xlsx';
-import fs from 'fs';
+import employeeRepository from '../repositories/employee.repository.js';
 import AppError from '../utils/AppError.js';
 import excelToJson from '../utils/excelToJson.js';
 
@@ -32,7 +30,8 @@ function validateData(data) {
 async function processEmployeefile(filename) {
     const normalizedData = normalizeEmployeeData(excelToJson(filename));
     validateData(normalizedData);
-    await employeeRepository.insertToDb(normalizedData);
+
+    await employeeRepository.upsertEmployees(normalizedData);
 }
 
 export default processEmployeefile;

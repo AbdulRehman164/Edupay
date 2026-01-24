@@ -114,13 +114,14 @@ const Body = () => {
         "
                         onClick={async () => {
                             const res = await fetch(
-                                'http://localhost:3000/api/generatepayslips',
+                                'http://localhost:3000/api/payslips/generate',
                                 {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
+                                        type: 'upload',
                                         uploadId: uploadRes.uploadId,
                                     }),
                                 },
@@ -155,7 +156,7 @@ const Body = () => {
                     <button
                         onClick={async () => {
                             const res = await fetch(
-                                `http://localhost:3000/api/download/${uploadRes.uploadId}`,
+                                `http://localhost:3000/api/payslips/download/${uploadRes.uploadId}`,
                             );
                             const blob = await res.blob();
                             const url = URL.createObjectURL(blob);

@@ -27,6 +27,15 @@ const Header = () => {
                             Employees
                         </Link>
                     </li>
+
+                    <li>
+                        <Link
+                            to="/payslips"
+                            className="rounded-md px-3 py-2 transition hover:bg-teal-600"
+                        >
+                            Payslips
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </header>
