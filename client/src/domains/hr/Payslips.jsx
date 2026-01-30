@@ -8,7 +8,7 @@ const Payslips = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // 🔁 Debounced search
+    // Debounced search
     useEffect(() => {
         if (!query.trim()) {
             setEmployees([]);
@@ -21,7 +21,7 @@ const Payslips = () => {
                 setError('');
 
                 const res = await fetch(
-                    `http://localhost:3000/api/employees?search=${encodeURIComponent(query)}`,
+                    `/api/employees?search=${encodeURIComponent(query)}`,
                 );
 
                 if (!res.ok) {
@@ -87,7 +87,9 @@ const Payslips = () => {
 
                             <button
                                 onClick={() => {
-                                    navigate(`/payslips/${employee.cnic_no}`);
+                                    navigate(
+                                        `/hr/payslips/${employee.cnic_no}`,
+                                    );
                                 }}
                                 className="
                   rounded-md border border-teal-500 px-4 py-1.5 text-sm

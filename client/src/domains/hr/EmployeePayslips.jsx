@@ -12,9 +12,7 @@ const EmployeePayslips = () => {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch(
-                `http://localhost:3000/api/payslips/search?cnic=${cnic}`,
-            );
+            const res = await fetch(`/api/payslips/search?cnic=${cnic}`);
             const json = await res.json();
             setPayslips(json);
         })();
@@ -24,9 +22,7 @@ const EmployeePayslips = () => {
         if (!jobId) return;
 
         const intervalId = setInterval(async () => {
-            const res = await fetch(
-                `http://localhost:3000/api/job-status/${jobId}`,
-            );
+            const res = await fetch(`/api/job-status/${jobId}`);
             const json = await res.json();
             setJobStatus(json.state);
         }, 1000);
@@ -38,9 +34,7 @@ const EmployeePayslips = () => {
         if (jobStatus !== 'completed' || !downloadId) return;
 
         (async () => {
-            const res = await fetch(
-                `http://localhost:3000/api/payslips/download/${downloadId}`,
-            );
+            const res = await fetch(`/api/payslips/download/${downloadId}`);
             const blob = await res.blob();
 
             const url = URL.createObjectURL(blob);
@@ -69,7 +63,7 @@ const EmployeePayslips = () => {
             year: p.year,
         }));
 
-        const res = await fetch('http://localhost:3000/api/payslips/generate', {
+        const res = await fetch('/api/payslips/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

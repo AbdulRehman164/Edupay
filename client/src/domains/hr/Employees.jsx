@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import SuccessPopup from './SuccessPopup';
+import SuccessPopup from '../../ui/SuccessPopup';
 
 const Employees = () => {
     const [file, setFile] = useState(null);
@@ -13,14 +13,12 @@ const Employees = () => {
     });
     const [fileUploadError, setFileUploadError] = useState();
     const [currentPage, setCurrentPage] = useState(1);
+
     useEffect(() => {
         (async () => {
-            const res = await fetch(
-                `http://localhost:3000/api/employees?page=${currentPage}`,
-                {
-                    method: 'GET',
-                },
-            );
+            const res = await fetch(`/api/employees?page=${currentPage}`, {
+                method: 'GET',
+            });
             const json = await res.json();
             setPaginationData({ ...json, isLoading: false });
         })();
@@ -31,15 +29,11 @@ const Employees = () => {
         formData.append('file', file);
         (async function () {
             try {
-                const res = await fetch(
-                    'http://localhost:3000/api/upload/employeefile',
-                    {
-                        method: 'POST',
-                        body: formData,
-                    },
-                );
+                const res = await fetch('/api/upload/employeefile', {
+                    method: 'POST',
+                    body: formData,
+                });
                 const json = await res.json();
-                console.log(json);
                 if (!res.ok) {
                     setFileUploadError(json.error || 'Server Error');
                 } else {
@@ -104,8 +98,8 @@ const Employees = () => {
 
             {/* Employee List */}
             <div className="divide-y rounded-lg border">
-                {!paginationData.isLoading &&
-                    paginationData.employees.map((employee) => (
+                {!paginationData?.isLoading &&
+                    paginationData?.employees.map((employee) => (
                         <div
                             key={employee.id}
                             className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
@@ -120,7 +114,7 @@ const Employees = () => {
                             </div>
 
                             <Link
-                                to={`/employees/${employee.cnic_no}`}
+                                to={`/hr/employees/${employee.cnic_no}`}
                                 className="text-sm font-semibold text-teal-600 hover:underline"
                             >
                                 Edit

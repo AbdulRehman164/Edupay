@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import SuccessPopup from './SuccessPopup';
+import SuccessPopup from '../../ui/SuccessPopup';
 
-const Body = () => {
+const HrDashboard = () => {
     const [file, setFile] = useState(null);
     const [fileError, setFileError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -12,18 +12,16 @@ const Body = () => {
     const [jobId, setJobId] = useState(null);
     const prevJobIdRef = useRef();
     const [jobStatus, setJobStatus] = useState('');
+
     useEffect(() => {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
         (async function () {
-            const res = await fetch(
-                'http://localhost:3000/api/upload/payslipfile',
-                {
-                    method: 'POST',
-                    body: formData,
-                },
-            );
+            const res = await fetch('/api/upload/payslipfile', {
+                method: 'POST',
+                body: formData,
+            });
             const json = await res.json();
             if (res.ok) {
                 setFileError('');
@@ -40,9 +38,7 @@ const Body = () => {
         if (jobStatus === 'completed' && prevJobIdRef.current === jobId) return;
         prevJobIdRef.current = jobId;
         const inetervalId = setInterval(async () => {
-            const res = await fetch(
-                `http://localhost:3000/api/job-status/${jobId}`,
-            );
+            const res = await fetch(`/api/job-status/${jobId}`);
             const json = await res.json();
             setJobStatus(json.state);
         }, 1000);
@@ -51,6 +47,7 @@ const Body = () => {
             clearInterval(inetervalId);
         };
     }, [jobId, jobStatus]);
+
     return (
         <div className="mx-auto my-8 max-w-5xl rounded-xl border bg-white p-6 shadow-sm">
             {/* Success Popup */}
@@ -113,19 +110,16 @@ const Body = () => {
           disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60
         "
                         onClick={async () => {
-                            const res = await fetch(
-                                'http://localhost:3000/api/payslips/generate',
-                                {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
-                                    body: JSON.stringify({
-                                        type: 'upload',
-                                        uploadId: uploadRes.uploadId,
-                                    }),
+                            const res = await fetch('/api/payslips/generate', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
                                 },
-                            );
+                                body: JSON.stringify({
+                                    type: 'upload',
+                                    uploadId: uploadRes.uploadId,
+                                }),
+                            });
                             const json = await res.json();
                             setJobId(json.jobId);
                         }}
@@ -156,7 +150,7 @@ const Body = () => {
                     <button
                         onClick={async () => {
                             const res = await fetch(
-                                `http://localhost:3000/api/payslips/download/${uploadRes.uploadId}`,
+                                `/api/payslips/download/${uploadRes.uploadId}`,
                             );
                             const blob = await res.blob();
                             const url = URL.createObjectURL(blob);
@@ -179,4 +173,4 @@ const Body = () => {
     );
 };
 
-export default Body;
+export default HrDashboard;

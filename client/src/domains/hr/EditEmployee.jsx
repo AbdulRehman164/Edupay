@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import SuccessPopup from './SuccessPopup';
+import SuccessPopup from '../../ui/SuccessPopup';
 
 const EditEmployee = () => {
     const { cnic } = useParams();
@@ -98,9 +98,7 @@ const EditEmployee = () => {
 
     useEffect(() => {
         (async function () {
-            const res = await fetch(
-                `http://localhost:3000/api/employees?search=${cnic}`,
-            );
+            const res = await fetch(`/api/employees?search=${cnic}`);
             const json = await res.json();
             const { id, ...rest } = json.employees[0];
             setEmployee(rest);
@@ -125,16 +123,13 @@ const EditEmployee = () => {
             return;
         }
         (async function () {
-            const res = await fetch(
-                `http://localhost:3000/api/employees/${employeeId}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(employee),
+            const res = await fetch(`/api/employees/${employeeId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-            );
+                body: JSON.stringify(employee),
+            });
             const json = await res.json();
             if (res.ok) {
                 setErrors({});
