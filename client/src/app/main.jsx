@@ -15,6 +15,7 @@ import PublicLayout from '../layouts/PublicLayout';
 import RequireRole from '../auth/RequireRole';
 import RedirectRole from '../auth/RedirectRole';
 import AdminDashboard from '../domains/admin/AdminDashboard';
+import PayslipsLayout from '../domains/hr/PayslipsLayout';
 
 const router = createBrowserRouter([
     {
@@ -55,12 +56,18 @@ const router = createBrowserRouter([
 
                             {
                                 path: 'payslips',
-                                element: <Payslips />,
-                            },
+                                element: <PayslipsLayout />,
+                                children: [
+                                    {
+                                        index: true,
 
-                            {
-                                path: 'payslips/:cnic',
-                                element: <EmployeePayslips />,
+                                        element: <Payslips />,
+                                    },
+                                    {
+                                        path: ':cnic',
+                                        element: <EmployeePayslips />,
+                                    },
+                                ],
                             },
                         ],
                     },

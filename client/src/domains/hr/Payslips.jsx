@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useOutletContext } from 'react-router';
 
 const Payslips = () => {
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useOutletContext();
     const [employees, setEmployees] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
