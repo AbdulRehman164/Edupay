@@ -23,12 +23,13 @@ const HrDashboard = () => {
                 body: formData,
             });
             const json = await res.json();
+            console.log(json);
             if (res.ok) {
                 setFileError('');
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
             } else {
-                setFileError(json.error);
+                setFileError(json.message);
             }
             setUploadRes({ uploadId: json.uploadId, isLoading: false });
         })();
@@ -102,8 +103,11 @@ const HrDashboard = () => {
                 {/* Generate Button */}
                 <div className="flex items-end">
                     <button
-                        disabled={uploadRes.uploadId === null}
-                        className="
+                        disabled={
+                            uploadRes.uploadId === null ||
+                            uploadRes.uploadId === undefined
+                        }
+                        className=" cursor-pointer
           rounded-lg bg-teal-500 px-6 py-2 text-sm font-semibold text-white
           transition
           enabled:hover:bg-teal-600 enabled:active:scale-95
