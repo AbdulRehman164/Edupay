@@ -1,11 +1,12 @@
 import payslipRepository from '../repositories/payslip.repository.js';
 import { zipFiles } from '../utils/zip.util.js';
-import { renderPdf, closeBrowser } from '../utils/pdfRenderer.util.js';
+import { renderPdf } from '../utils/pdfRenderer.util.js';
 import generatePayslipTemplate from '../utils/generatePayslipTemplate.util.js';
 import AppError from '../utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { payslipQueue } from '../queues/index.js';
 
 async function generatePayslipArchive(payslips, zipname) {
     const outputPath = 'generated/';
@@ -57,4 +58,25 @@ async function generateForIdentifiers(identifiers, downloadId) {
     await generatePayslipArchive(payslips, downloadId);
 }
 
-export { generateForUpload, generateForIdentifiers };
+async function queuePayslipJob(body) {
+    let job;
+    let downloadId;
+    if (body?.type === 'upload') {
+        downloadId = body?.uploadId;
+        job = await payslipQueue.add('generate-for-upload', {
+            uploadId: body?.uploadId,
+            downloadId,
+        });
+    } else if (body?.type === 'identifier') {
+        downloadId = crypto.randomUUID();
+        job = await payslipQueue.add('generate-for-identifier', {
+            identifiers: body?.identifiers,
+            downloadId,
+        });
+    } else {
+        throw new AppError(`Unrecognized job type : ${body?.type}`, 400);
+    }
+    return { jobId: job.id, downloadId };
+}
+
+export { generateForUpload, generateForIdentifiers, queuePayslipJob };

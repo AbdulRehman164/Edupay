@@ -1,8 +1,7 @@
 import fs from 'fs';
 import payslipRepository from '../repositories/payslip.repository.js';
 import AppError from '../utils/AppError.js';
-import { payslipQueue } from '../queues/index.js';
-import crypto from 'crypto';
+import { queuePayslipJob } from '../services/PayslipGeneration.service.js';
 
 async function fileDownloadController(req, res) {
     const { id } = req.params;
@@ -27,26 +26,18 @@ async function searchPayslipsController(req, res) {
     res.json(result);
 }
 
-async function generatePayslipsController(req, res) {
-    const body = req.body;
-    let job;
-    let downloadId;
-    if (body?.type === 'upload') {
-        downloadId = body?.uploadId;
-        job = await payslipQueue.add('generate-for-upload', {
-            uploadId: body?.uploadId,
-            downloadId,
+async function generatePayslipsController(req, res, next) {
+    try {
+        const body = req.body;
+        const result = await queuePayslipJob(body);
+        res.status(202).json({
+            message: 'Queued',
+            jobId: result?.jobId,
+            downloadId: result?.downloadId,
         });
-    } else if (body?.type === 'identifier') {
-        downloadId = crypto.randomUUID();
-        job = await payslipQueue.add('generate-for-identifier', {
-            identifiers: body?.identifiers,
-            downloadId,
-        });
-    } else {
-        throw new AppError(`Unrecognized job type : ${body?.type}`, 400);
+    } catch (e) {
+        next(e);
     }
-    res.status(202).json({ message: 'Queued', jobId: job.id, downloadId });
 }
 
 export {
