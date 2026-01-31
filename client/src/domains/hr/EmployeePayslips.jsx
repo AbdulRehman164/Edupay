@@ -14,7 +14,9 @@ const EmployeePayslips = () => {
         (async () => {
             const res = await fetch(`/api/payslips/search?cnic=${cnic}`);
             const json = await res.json();
-            setPayslips(json);
+            if (res.ok) {
+                setPayslips(json);
+            }
         })();
     }, [cnic]);
 
@@ -57,7 +59,7 @@ const EmployeePayslips = () => {
 
         setIsGenerating(true);
 
-        const identifiers = payslips.map((p) => ({
+        const identifiers = payslips?.map((p) => ({
             cnic_no: p.cnic_no,
             month: p.month,
             year: p.year,
