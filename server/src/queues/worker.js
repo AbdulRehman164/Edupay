@@ -5,6 +5,7 @@ import {
     generateForUpload,
     generateForIdentifiers,
 } from '../services/PayslipGeneration.service.js';
+import { closeBrowser } from '../utils/pdfRenderer.util.js';
 dotenv.config();
 
 const connection = { host: '127.0.0.1', port: 6379 };
@@ -32,6 +33,15 @@ worker.on('failed', (job, err) => {
 });
 
 process.on('SIGINT', async () => {
+    console.log('Shutting down worker...');
+    await worker.close(); // stop BullMQ
+    await closeBrowser(); // close Chromium
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('Shutting down worker...');
     await worker.close();
+    await closeBrowser();
     process.exit(0);
 });

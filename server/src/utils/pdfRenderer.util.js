@@ -23,19 +23,27 @@ export async function renderPdf(html, outputPath, filename) {
     const browser = await getBrowser();
     const page = await browser.newPage();
 
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    try {
+        await page.setContent(html, {
+            waitUntil: ['domcontentloaded', 'networkidle2'],
+            timeout: 30000,
+        });
 
-    const buffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: { top: '20mm', bottom: '20mm' },
-    });
+        const buffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '20mm', bottom: '20mm' },
+        });
 
-    const filePath = path.join(outputPath, `${filename}.pdf`);
-    fs.writeFileSync(filePath, buffer);
-    await page.close();
+        const filePath = path.join(outputPath, `${filename}.pdf`);
+        await fs.promises.writeFile(filePath, buffer);
 
-    return filePath;
+        return filePath;
+    } finally {
+        if (!page.isClosed()) {
+            await page.close();
+        }
+    }
 }
 
 export async function closeBrowser() {

@@ -15,23 +15,20 @@ async function generatePayslipArchive(payslips, zipname) {
 
     const template = generatePayslipTemplate(payslips[0]);
 
-    try {
-        for (let i = 0; i < payslips.length; i += 30) {
-            const batch = payslips.slice(i, i + 30);
+    for (let i = 0; i < payslips.length; i += 30) {
+        const batch = payslips.slice(i, i + 30);
 
-            for (const e of batch) {
-                files.push(
-                    await renderPdf(
-                        template,
-                        outputPath,
-                        `${e?.name}_${e?.cnic_no}_${e?.month}_${e?.year}`,
-                    ),
-                );
-            }
+        for (const e of batch) {
+            files.push(
+                await renderPdf(
+                    template,
+                    outputPath,
+                    `${e?.name}_${e?.cnic_no}_${e?.month}_${e?.year}`,
+                ),
+            );
         }
-    } finally {
-        await closeBrowser();
     }
+
     await zipFiles(path.join(outputPath, zipname), files);
     for (const file of files) {
         await fs.promises.rm(file, { force: true });

@@ -97,7 +97,7 @@ async function processPayslipFile(filename) {
 
     const rows = buildPayslipRows(data, employeesMap, uploadId);
 
-    await payslipRepository.upsertPayslips(rows);
+    await payslipRepository.replacePayslips(rows);
     return uploadId;
 }
 
