@@ -1,0 +1,18 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="140"
+  height="40"
+  viewBox="0 0 140 40"
+>
+  <text
+    x="0"
+    y="28"
+    font-size="28"
+    font-weight="800"
+    font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+    fill="#ffffff"
+  >
+    <tspan letter-spacing="0.04em">Edu</tspan
+    ><tspan fill="#99f6e4">Pay</tspan>
+  </text>
+</svg>
