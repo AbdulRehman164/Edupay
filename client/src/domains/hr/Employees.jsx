@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useOutletContext } from 'react-router';
 import SuccessPopup from '../../ui/SuccessPopup';
 
 const Employees = () => {
@@ -12,7 +12,7 @@ const Employees = () => {
         isLoading: false,
     });
     const [fileUploadError, setFileUploadError] = useState();
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useOutletContext();
 
     useEffect(() => {
         (async () => {
