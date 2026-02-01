@@ -5,38 +5,48 @@ const EmployeePayslips = () => {
     const { cnic } = useParams();
 
     const [payslips, setPayslips] = useState([]);
-    const [jobId, setJobId] = useState(null);
-    const [jobStatus, setJobStatus] = useState(null);
-    const [downloadId, setDownloadId] = useState(null);
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [job, setJob] = useState(null);
+    const [error, setError] = useState(null);
+
+    /* ---------------- Fetch payslips ---------------- */
 
     useEffect(() => {
         (async () => {
             const res = await fetch(`/api/payslips/search?cnic=${cnic}`);
             const json = await res.json();
+
             if (res.ok) {
                 setPayslips(json);
             }
         })();
     }, [cnic]);
 
+    /* ---------------- Poll job status ---------------- */
+
     useEffect(() => {
-        if (!jobId) return;
+        if (!job?.id) return;
 
         const intervalId = setInterval(async () => {
-            const res = await fetch(`/api/job-status/${jobId}`);
+            const res = await fetch(`/api/job-status/${job.id}`);
             const json = await res.json();
-            setJobStatus(json.state);
+
+            if (res.ok) {
+                setJob((prev) =>
+                    prev ? { ...prev, status: json.state } : prev,
+                );
+            }
         }, 1000);
 
         return () => clearInterval(intervalId);
-    }, [jobId]);
+    }, [job?.id]);
+
+    /* ---------------- Download when completed ---------------- */
 
     useEffect(() => {
-        if (jobStatus !== 'completed' || !downloadId) return;
+        if (job?.status !== 'completed' || !job.downloadId) return;
 
         (async () => {
-            const res = await fetch(`/api/payslips/download/${downloadId}`);
+            const res = await fetch(`/api/payslips/download/${job.downloadId}`);
             const blob = await res.blob();
 
             const url = URL.createObjectURL(blob);
@@ -46,20 +56,19 @@ const EmployeePayslips = () => {
             a.click();
             URL.revokeObjectURL(url);
 
-            // reset state
-            setJobId(null);
-            setJobStatus(null);
-            setDownloadId(null);
-            setIsGenerating(false);
+            // reset job state
+            setJob(null);
         })();
-    }, [jobStatus, downloadId]);
+    }, [job?.status, job?.downloadId]);
 
-    async function downloadHandler() {
-        if (isGenerating) return;
+    /* ---------------- Handlers ---------------- */
 
-        setIsGenerating(true);
+    async function downloadAllHandler() {
+        if (job) return;
 
-        const identifiers = payslips?.map((p) => ({
+        setError(null);
+
+        const identifiers = payslips.map((p) => ({
             cnic_no: p.cnic_no,
             month: p.month,
             year: p.year,
@@ -74,18 +83,45 @@ const EmployeePayslips = () => {
             }),
         });
 
-        const { jobId, downloadId } = await res.json();
+        const json = await res.json();
 
-        setJobId(jobId);
-        setDownloadId(downloadId);
-        setJobStatus('pending');
+        if (!res.ok) {
+            setError(json.message || 'Failed to generate payslips');
+            return;
+        }
+
+        setJob({
+            id: json.jobId,
+            status: 'pending',
+            downloadId: json.downloadId,
+        });
     }
+
+    const jobInProgress =
+        job && job.status !== 'completed' && job.status !== 'failed';
+
+    /* ---------------- UI ---------------- */
 
     return (
         <div className="mx-auto mt-6 max-w-3xl rounded-xl border bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-gray-800">
-                Payslips
-            </h3>
+            <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-800">
+                    Payslips
+                </h3>
+
+                <button
+                    disabled={jobInProgress || payslips.length === 0}
+                    onClick={downloadAllHandler}
+                    className="
+            rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white
+            transition hover:bg-teal-700 disabled:opacity-50
+          "
+                >
+                    {jobInProgress ? 'Generating…' : 'Download all payslips'}
+                </button>
+            </div>
+
+            {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
             {payslips.length === 0 ? (
                 <div className="rounded-lg border border-dashed p-6 text-center text-sm text-gray-500">
@@ -93,40 +129,45 @@ const EmployeePayslips = () => {
                 </div>
             ) : (
                 <div className="divide-y rounded-lg border">
-                    {payslips.map((payslip) => (
+                    {payslips.map((p) => (
                         <div
-                            key={`${payslip.month}-${payslip.year}`}
-                            className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
+                            key={`${p.month}-${p.year}`}
+                            className="flex items-center justify-between px-4 py-3"
                         >
                             <div>
                                 <p className="font-medium text-gray-800">
                                     {new Date(
                                         2000,
-                                        payslip.month - 1,
+                                        p.month - 1,
                                         1,
                                     ).toLocaleString('en-US', {
                                         month: 'short',
                                     })}{' '}
-                                    – {payslip.year}
+                                    – {p.year}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                     Monthly Payslip
                                 </p>
                             </div>
-
-                            <button
-                                disabled={isGenerating}
-                                onClick={downloadHandler}
-                                className="
-                  rounded-md border border-teal-500 px-4 py-1.5 text-sm
-                  font-semibold text-teal-600 transition
-                  hover:bg-teal-50 disabled:opacity-50
-                "
-                            >
-                                {isGenerating ? 'Generating…' : 'Download'}
-                            </button>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {job && (
+                <div className="mt-4 text-sm text-gray-600">
+                    Status:{' '}
+                    <span
+                        className={
+                            job.status === 'completed'
+                                ? 'text-green-600'
+                                : job.status === 'failed'
+                                  ? 'text-red-600'
+                                  : 'text-gray-500'
+                        }
+                    >
+                        {job.status}
+                    </span>
                 </div>
             )}
         </div>
