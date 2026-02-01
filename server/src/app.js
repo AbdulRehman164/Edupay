@@ -14,6 +14,7 @@ import client from './config/redis.js';
 import passport from './config/passport.js';
 import authRoute from './routes/auth.route.js';
 import isAuth from './middleware/isAuth.middleware.js';
+import activeJobsController from './controllers/activeJobs.controller.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,6 +56,7 @@ app.use(isAuth);
 app.use('/api/upload', uploadRoute);
 app.use('/api/payslips', payslipsRoute);
 app.get('/api/job-status/:id', jobStatusController); //TODO: Set Permissions
+app.get('/api/active-jobs', activeJobsController);
 app.use('/api/employees/', employeeRoute);
 app.use(errorHandler);
 

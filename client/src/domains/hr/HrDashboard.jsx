@@ -16,6 +16,21 @@ const HrDashboard = () => {
     const [downloadId, setDownloadId] = useState(null);
 
     useEffect(() => {
+        (async () => {
+            const res = await fetch('/api/active-jobs');
+            const json = await res.json();
+            if (res.ok) {
+                json.forEach((job) => {
+                    if (job.type === 'generate-for-upload') {
+                        setJobId(job.jobId);
+                        setDownloadId(job.downloadId);
+                    }
+                });
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
@@ -42,7 +57,9 @@ const HrDashboard = () => {
         const inetervalId = setInterval(async () => {
             const res = await fetch(`/api/job-status/${jobId}`);
             const json = await res.json();
-            setJobStatus(json.state);
+            if (res.ok) {
+                setJobStatus(json.state);
+            }
         }, 1000);
 
         return () => {
