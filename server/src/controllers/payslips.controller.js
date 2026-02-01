@@ -29,7 +29,7 @@ async function searchPayslipsController(req, res) {
 async function generatePayslipsController(req, res, next) {
     try {
         const body = req.body;
-        const result = await queuePayslipJob(body);
+        const result = await queuePayslipJob(body, req.user.id);
         res.status(202).json({
             message: 'Queued',
             jobId: result?.jobId,

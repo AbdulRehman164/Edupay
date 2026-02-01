@@ -3,6 +3,20 @@ import payslipRepository from '../repositories/payslip.repository.js';
 import AppError from '../utils/AppError.js';
 import excelToJson from '../utils/excelToJson.js';
 import employeeRepository from '../repositories/employee.repository.js';
+import crypto from 'crypto';
+
+function stableStringify(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return JSON.stringify(obj);
+    }
+
+    if (Array.isArray(obj)) {
+        return `[${obj.map(stableStringify).join(',')}]`;
+    }
+
+    const keys = Object.keys(obj).sort();
+    return `{${keys.map((k) => `"${k}":${stableStringify(obj[k])}`).join(',')}}`;
+}
 
 function validateData(data) {
     data.forEach((e) => {
@@ -37,7 +51,7 @@ function validateData(data) {
     }
 }
 
-function buildPayslipRows(data, employeeMap, uploadId) {
+function buildPayslipRows(data, employeeMap) {
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -53,8 +67,7 @@ function buildPayslipRows(data, employeeMap, uploadId) {
 
         const { total_deductions, total_allowances } = p.summaries;
 
-        return {
-            upload_id: uploadId,
+        const r = {
             employee_id: employee.id,
             name: employee.name,
             cnic_no: employee.cnic_no,
@@ -76,6 +89,7 @@ function buildPayslipRows(data, employeeMap, uploadId) {
             month,
             year,
         };
+        return { ...r, data_hash: computePayslipHash(r) };
     });
 }
 
@@ -84,21 +98,41 @@ async function processPayslipFile(filename) {
     validateData(data);
 
     const cnics = data.map((d) => d.cnic_no);
-
     const employees = await employeeRepository.getEmployeeByCnics(cnics);
 
     if (employees.length < cnics.length) {
-        new AppError('Some employees not found!', 400);
+        throw new AppError('Some employees not found!', 400);
     }
 
-    const employeesMap = new Map(employees.map((e) => [e.cnic_no, e]));
+    const employeeMap = new Map(employees.map((e) => [e.cnic_no, e]));
 
-    const uploadId = crypto.randomUUID();
+    const batchId = crypto.randomUUID();
+    await payslipRepository.createBatch(batchId);
 
-    const rows = buildPayslipRows(data, employeesMap, uploadId);
+    const rows = buildPayslipRows(data, employeeMap);
 
-    await payslipRepository.replacePayslips(rows);
-    return uploadId;
+    const payslipIds = await payslipRepository.replacePayslips(rows);
+
+    await payslipRepository.attachPayslipsToBatch(batchId, payslipIds);
+
+    return batchId;
+}
+
+function computePayslipHash(row) {
+    const payload = {
+        employee_id: row.employee_id,
+        month: row.month,
+        year: row.year,
+        basic_pay: row.basic_pay,
+        total_allowances: row.total_allowances,
+        total_deductions: row.total_deductions,
+        json: row.json,
+    };
+
+    return crypto
+        .createHash('sha256')
+        .update(stableStringify(payload))
+        .digest('hex');
 }
 
 export default processPayslipFile;

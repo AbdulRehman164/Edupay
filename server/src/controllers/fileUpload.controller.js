@@ -15,8 +15,8 @@ async function employeefileController(req, res, next) {
 async function payslipfileController(req, res, next) {
     try {
         const filename = path.join('uploads', req.file.filename);
-        const uploadId = await processPayslipFile(filename);
-        return res.json({ message: 'Uploaded successfully.', uploadId });
+        const batchId = await processPayslipFile(filename);
+        return res.json({ message: 'Uploaded successfully.', batchId });
     } catch (e) {
         next(e);
     }

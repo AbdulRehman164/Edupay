@@ -3,15 +3,17 @@ import SuccessPopup from '../../ui/SuccessPopup';
 
 const HrDashboard = () => {
     const [file, setFile] = useState(null);
-    const [fileError, setFileError] = useState(false);
+    const [fileError, setFileError] = useState('');
+    const [generateError, setGenerateError] = useState('');
     const [showSuccess, setShowSuccess] = useState(false);
     const [uploadRes, setUploadRes] = useState({
-        uploadId: null,
+        batchId: null,
         isLoading: false,
     });
     const [jobId, setJobId] = useState(null);
     const prevJobIdRef = useRef();
     const [jobStatus, setJobStatus] = useState('');
+    const [downloadId, setDownloadId] = useState(null);
 
     useEffect(() => {
         if (!file) return;
@@ -23,15 +25,14 @@ const HrDashboard = () => {
                 body: formData,
             });
             const json = await res.json();
-            console.log(json);
             if (res.ok) {
                 setFileError('');
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
+                setUploadRes({ batchId: json.batchId, isLoading: false });
             } else {
                 setFileError(json.message);
             }
-            setUploadRes({ uploadId: json.uploadId, isLoading: false });
         })();
     }, [file]);
     useEffect(() => {
@@ -95,17 +96,21 @@ const HrDashboard = () => {
                         }}
                     />
 
-                    {fileError && (
-                        <p className="mt-2 text-sm text-red-500">{fileError}</p>
-                    )}
+                    <div className="min-h-[1.25rem] mt-2">
+                        {fileError && (
+                            <p className="mt-2 text-sm text-red-500">
+                                {fileError}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Generate Button */}
-                <div className="flex items-end">
+                <div className="flex flex-col items-end">
                     <button
                         disabled={
-                            uploadRes.uploadId === null ||
-                            uploadRes.uploadId === undefined
+                            uploadRes.batchId === null ||
+                            uploadRes.batchId === undefined
                         }
                         className=" cursor-pointer
           rounded-lg bg-teal-500 px-6 py-2 text-sm font-semibold text-white
@@ -121,15 +126,29 @@ const HrDashboard = () => {
                                 },
                                 body: JSON.stringify({
                                     type: 'upload',
-                                    uploadId: uploadRes.uploadId,
+                                    batchId: uploadRes.batchId,
                                 }),
                             });
                             const json = await res.json();
-                            setJobId(json.jobId);
+                            if (res.ok) {
+                                setJobId(json.jobId);
+                                setGenerateError('');
+                                setDownloadId(json.downloadId);
+                                return;
+                            }
+                            setGenerateError(json.message);
                         }}
                     >
                         Generate Payslips
                     </button>
+
+                    <div className="min-h-[1.25rem] mt-2">
+                        {generateError && (
+                            <p className="text-sm text-red-500">
+                                {generateError}
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -154,7 +173,7 @@ const HrDashboard = () => {
                     <button
                         onClick={async () => {
                             const res = await fetch(
-                                `/api/payslips/download/${uploadRes.uploadId}`,
+                                `/api/payslips/download/${downloadId}`,
                             );
                             const blob = await res.blob();
                             const url = URL.createObjectURL(blob);

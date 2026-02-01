@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { payslipQueue } from '../queues/index.js';
+import hasActiveJob from '../utils/hasActiveJob.js';
 
 async function generatePayslipArchive(payslips, zipname) {
     const outputPath = 'generated/';
@@ -37,8 +38,8 @@ async function generatePayslipArchive(payslips, zipname) {
     return zipname;
 }
 
-async function generateForUpload(uploadId, downloadId) {
-    const payslips = await payslipRepository.getPayslipsByUploadId(uploadId);
+async function generateForUpload(batchId, downloadId) {
+    const payslips = await payslipRepository.getPayslipsByBatchId(batchId);
     if (payslips.length <= 0) {
         throw new AppError(
             `No data found corresponding to uploadid : ${uploadId}`,
@@ -58,20 +59,33 @@ async function generateForIdentifiers(identifiers, downloadId) {
     await generatePayslipArchive(payslips, downloadId);
 }
 
-async function queuePayslipJob(body) {
+async function queuePayslipJob(body, userId) {
+    const jobType =
+        body.type === 'upload'
+            ? 'generate-for-upload'
+            : 'generate-for-identifier';
+
+    const alreadyRunning = await hasActiveJob(userId, jobType);
+
+    if (alreadyRunning) {
+        throw new AppError('A payslip generation is already in progress', 409);
+    }
+
     let job;
     let downloadId;
     if (body?.type === 'upload') {
-        downloadId = body?.uploadId;
+        downloadId = body?.batchId;
         job = await payslipQueue.add('generate-for-upload', {
-            uploadId: body?.uploadId,
+            batchId: body?.batchId,
             downloadId,
+            userId,
         });
     } else if (body?.type === 'identifier') {
         downloadId = crypto.randomUUID();
         job = await payslipQueue.add('generate-for-identifier', {
             identifiers: body?.identifiers,
             downloadId,
+            userId,
         });
     } else {
         throw new AppError(`Unrecognized job type : ${body?.type}`, 400);

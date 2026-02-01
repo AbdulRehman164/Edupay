@@ -14,8 +14,8 @@ const worker = new Worker(
     queueName,
     async (job) => {
         if (job.name === 'generate-for-upload') {
-            const { uploadId, downloadId } = job.data;
-            await generateForUpload(uploadId, downloadId);
+            const { batchId, downloadId } = job.data;
+            await generateForUpload(batchId, downloadId);
         } else if (job.name === 'generate-for-identifier') {
             const { identifiers, downloadId } = job.data;
             await generateForIdentifiers(identifiers, downloadId);
