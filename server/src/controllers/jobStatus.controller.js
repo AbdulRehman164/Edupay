@@ -6,6 +6,8 @@ async function jobStatusController(req, res) {
     const job = await payslipQueue.getJob(id);
 
     if (!job) return res.status(404).json({ state: 'not found' });
+    if (job.userId !== req.user.id)
+        return res.status(401).json({ message: 'forbidden' });
 
     const state = await job.getState();
     res.json({ state });

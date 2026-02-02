@@ -55,7 +55,7 @@ app.use(isAuth);
 // Protected Routes
 app.use('/api/upload', uploadRoute);
 app.use('/api/payslips', payslipsRoute);
-app.get('/api/job-status/:id', jobStatusController); //TODO: Set Permissions
+app.get('/api/job-status/:id', jobStatusController);
 app.get('/api/active-jobs', activeJobsController);
 app.use('/api/employees/', employeeRoute);
 app.use(errorHandler);
