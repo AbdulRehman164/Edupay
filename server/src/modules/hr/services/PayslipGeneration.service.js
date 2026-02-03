@@ -2,61 +2,84 @@ import payslipRepository from '../repositories/payslip.repository.js';
 import { zipFiles } from '../utils/zip.util.js';
 import { renderPdf } from '../utils/pdfRenderer.util.js';
 import generatePayslipTemplate from '../utils/generatePayslipTemplate.util.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../../../shared/utils/AppError.js';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { payslipQueue } from '../queues/index.js';
+import { payslipQueue } from '../../../queues/index.js';
 import hasActiveJob from '../utils/hasActiveJob.js';
 
-async function generatePayslipArchive(payslips, zipname) {
+async function generatePayslipArchive(payslips, zipname, signal) {
     const outputPath = 'generated/';
-    let files = [];
+    const files = [];
 
     await fs.promises.mkdir(outputPath, { recursive: true });
 
-    const template = generatePayslipTemplate(payslips[0]);
+    // Ensure cleanup ALWAYS happens
+    try {
+        signal?.throwIfAborted();
 
-    for (let i = 0; i < payslips.length; i += 30) {
-        const batch = payslips.slice(i, i + 30);
+        const template = generatePayslipTemplate(payslips[0]);
 
-        for (const e of batch) {
-            files.push(
-                await renderPdf(
+        for (let i = 0; i < payslips.length; i += 30) {
+            signal?.throwIfAborted();
+
+            const batch = payslips.slice(i, i + 30);
+
+            for (const e of batch) {
+                signal?.throwIfAborted();
+
+                const file = await renderPdf(
                     template,
                     outputPath,
-                    `${e?.name}_${e?.cnic_no}_${e?.month}_${e?.year}`,
-                ),
-            );
-        }
-    }
+                    `${e.name}_${e.cnic_no}_${e.month}_${e.year}`,
+                    signal,
+                );
 
-    await zipFiles(path.join(outputPath, zipname), files);
-    for (const file of files) {
-        await fs.promises.rm(file, { force: true });
+                files.push(file);
+            }
+        }
+
+        signal?.throwIfAborted();
+
+        await zipFiles(path.join(outputPath, zipname), files, signal);
+
+        return zipname;
+    } finally {
+        await Promise.allSettled(
+            files.map((file) => fs.promises.rm(file, { force: true })),
+        );
     }
-    return zipname;
 }
 
-async function generateForUpload(batchId, downloadId) {
+async function generateForUpload(batchId, downloadId, signal) {
+    signal?.throwIfAborted();
+
     const payslips = await payslipRepository.getPayslipsByBatchId(batchId);
+
     if (payslips.length <= 0) {
         throw new AppError(
-            `No data found corresponding to uploadid : ${uploadId}`,
+            `No data found corresponding to uploadid : ${batchId}`,
             404,
         );
     }
-    await generatePayslipArchive(payslips, downloadId);
+
+    signal?.throwIfAborted();
+
+    await generatePayslipArchive(payslips, downloadId, signal);
 }
 
-async function generateForIdentifiers(identifiers, downloadId) {
+async function generateForIdentifiers(identifiers, downloadId, signal) {
+    signal?.throwIfAborted();
     const payslips =
         await payslipRepository.getPayslipsByIdentifiers(identifiers);
 
     if (payslips.length <= 0) {
         throw new AppError('No payslips found', 404);
     }
-    await generatePayslipArchive(payslips, downloadId);
+
+    signal?.throwIfAborted();
+    await generatePayslipArchive(payslips, downloadId, signal);
 }
 
 async function queuePayslipJob(body, userId) {

@@ -16,7 +16,7 @@ const Employees = () => {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch(`/api/employees?page=${currentPage}`, {
+            const res = await fetch(`/api/hr/employees?page=${currentPage}`, {
                 method: 'GET',
             });
             const json = await res.json();
@@ -29,7 +29,7 @@ const Employees = () => {
         formData.append('file', file);
         (async function () {
             try {
-                const res = await fetch('/api/upload/employeefile', {
+                const res = await fetch('/api/hr/uploads/employeefile', {
                     method: 'POST',
                     body: formData,
                 });

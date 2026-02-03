@@ -1,4 +1,4 @@
-import { payslipQueue } from '../queues/index.js';
+import { payslipQueue } from '../../../queues/index.js';
 
 async function hasActiveJob(userId, type) {
     const jobs = await payslipQueue.getJobs(['waiting', 'active', 'delayed']);

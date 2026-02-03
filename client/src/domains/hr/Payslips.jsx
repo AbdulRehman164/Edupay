@@ -22,7 +22,7 @@ const Payslips = () => {
                 setError('');
 
                 const res = await fetch(
-                    `/api/employees?search=${encodeURIComponent(query)}`,
+                    `/api/hr/employees?search=${encodeURIComponent(query)}`,
                 );
 
                 if (!res.ok) {

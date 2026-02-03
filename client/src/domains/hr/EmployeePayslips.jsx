@@ -12,7 +12,7 @@ const EmployeePayslips = () => {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch(`/api/payslips/search?cnic=${cnic}`);
+            const res = await fetch(`/api/hr/payslips/search?cnic=${cnic}`);
             const json = await res.json();
 
             if (res.ok) {
@@ -27,7 +27,7 @@ const EmployeePayslips = () => {
         if (!job?.id) return;
 
         const intervalId = setInterval(async () => {
-            const res = await fetch(`/api/job-status/${job.id}`);
+            const res = await fetch(`/api/hr/jobs/status/${job.id}`);
             const json = await res.json();
 
             if (res.ok) {
@@ -46,7 +46,9 @@ const EmployeePayslips = () => {
         if (job?.status !== 'completed' || !job.downloadId) return;
 
         (async () => {
-            const res = await fetch(`/api/payslips/download/${job.downloadId}`);
+            const res = await fetch(
+                `/api/hr/payslips/download/${job.downloadId}`,
+            );
             const blob = await res.blob();
 
             const url = URL.createObjectURL(blob);
@@ -74,7 +76,7 @@ const EmployeePayslips = () => {
             year: p.year,
         }));
 
-        const res = await fetch('/api/payslips/generate', {
+        const res = await fetch('/api/hr/payslips/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -155,19 +157,47 @@ const EmployeePayslips = () => {
             )}
 
             {job && (
-                <div className="mt-4 text-sm text-gray-600">
-                    Status:{' '}
-                    <span
-                        className={
-                            job.status === 'completed'
-                                ? 'text-green-600'
-                                : job.status === 'failed'
-                                  ? 'text-red-600'
-                                  : 'text-gray-500'
-                        }
-                    >
-                        {job.status}
-                    </span>
+                <div className="mt-4 text-sm text-gray-600 flex items-center justify-between">
+                    <div>
+                        Status:{' '}
+                        <span
+                            className={
+                                job.status === 'completed'
+                                    ? 'text-green-600'
+                                    : job.status === 'failed'
+                                      ? 'text-red-600'
+                                      : 'text-gray-500'
+                            }
+                        >
+                            {job.status}
+                        </span>
+                    </div>
+                    <div>
+                        {job.status === 'active' ||
+                        job.status === 'waiting' ||
+                        job.status === 'delayed' ||
+                        job.status === 'pending' ? (
+                            <button
+                                onClick={async () => {
+                                    const confirmCancel = window.confirm(
+                                        'Are you sure you want to cancel this job?',
+                                    );
+                                    if (!confirmCancel) return;
+
+                                    await fetch(
+                                        `/api/hr/jobs/cancel/${job.id}`,
+                                        {
+                                            method: 'DELETE',
+                                        },
+                                    );
+                                    setJob(null);
+                                }}
+                                className="rounded-lg border border-red-500 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 active:scale-95"
+                            >
+                                Cancel Job
+                            </button>
+                        ) : null}
+                    </div>
                 </div>
             )}
         </div>

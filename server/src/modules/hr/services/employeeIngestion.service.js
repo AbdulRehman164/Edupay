@@ -1,6 +1,6 @@
 import { normalizeEmployeeData } from '../utils/normalizeData.js';
 import employeeRepository from '../repositories/employee.repository.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../../../shared/utils/AppError.js';
 import excelToJson from '../utils/excelToJson.js';
 
 function validateData(data) {

@@ -1,24 +1,29 @@
-import { Worker } from 'bullmq';
+import { Worker, UnrecoverableError } from 'bullmq';
 import { queueName } from './index.js';
 import dotenv from 'dotenv';
 import {
     generateForUpload,
     generateForIdentifiers,
-} from '../services/PayslipGeneration.service.js';
-import { closeBrowser } from '../utils/pdfRenderer.util.js';
+} from '../modules/hr/services/PayslipGeneration.service.js';
+import { closeBrowser } from '../modules/hr/utils/pdfRenderer.util.js';
+import redis from '../config/redis.js';
 dotenv.config();
 
 const connection = { host: '127.0.0.1', port: 6379 };
 
 const worker = new Worker(
     queueName,
-    async (job) => {
+    async (job, token, signal) => {
+        signal?.addEventListener('abort', async () => {
+            console.log(`Job ${job.id} cancelled`);
+            await closeBrowser();
+        });
         if (job.name === 'generate-for-upload') {
             const { batchId, downloadId } = job.data;
-            await generateForUpload(batchId, downloadId);
+            await generateForUpload(batchId, downloadId, signal);
         } else if (job.name === 'generate-for-identifier') {
             const { identifiers, downloadId } = job.data;
-            await generateForIdentifiers(identifiers, downloadId);
+            await generateForIdentifiers(identifiers, downloadId, signal);
         }
     },
     { connection, concurrency: 2 },
@@ -44,4 +49,14 @@ process.on('SIGTERM', async () => {
     await worker.close();
     await closeBrowser();
     process.exit(0);
+});
+
+redis.subscribe('payslip:cancel', (jobId) => {
+    const cancelled = worker.cancelJob(jobId, 'User cancelled from UI');
+
+    if (cancelled) {
+        console.log(`Job ${jobId} cancellation sent`);
+    } else {
+        console.log(`Job ${jobId} was not active`);
+    }
 });

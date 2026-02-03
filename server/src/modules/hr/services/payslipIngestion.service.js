@@ -1,6 +1,6 @@
 import { normalizePayslipData } from '../utils/normalizeData.js';
 import payslipRepository from '../repositories/payslip.repository.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../../../shared/utils/AppError.js';
 import excelToJson from '../utils/excelToJson.js';
 import employeeRepository from '../repositories/employee.repository.js';
 import crypto from 'crypto';

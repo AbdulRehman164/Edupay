@@ -1,6 +1,6 @@
 import fs from 'fs';
 import payslipRepository from '../repositories/payslip.repository.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../../../shared/utils/AppError.js';
 import { queuePayslipJob } from '../services/PayslipGeneration.service.js';
 
 async function fileDownloadController(req, res) {

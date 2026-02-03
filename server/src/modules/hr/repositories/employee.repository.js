@@ -1,5 +1,5 @@
-import pool from '../config//db.js';
-import AppError from '../utils/AppError.js';
+import pool from '../../../config/db.js';
+import AppError from '../../../shared/utils/AppError.js';
 
 async function upsertEmployees(rows) {
     const columns = [

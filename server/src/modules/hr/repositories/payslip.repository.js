@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import pool from '../../../config/db.js';
 
 /**
  * Replace or reuse payslips based on data_hash.
@@ -12,7 +12,7 @@ async function replacePayslips(rows) {
     try {
         await client.query('BEGIN');
 
-        // 1️⃣ Temp table for incoming rows
+        // Temp table for incoming rows
         await client.query(`
             CREATE TEMP TABLE tmp_payslips (
                 employee_id INT,
@@ -36,7 +36,7 @@ async function replacePayslips(rows) {
             ) ON COMMIT DROP;
         `);
 
-        // 2️⃣ Bulk insert into temp table
+        // Bulk insert into temp table
         const cols = [
             'employee_id',
             'name',
@@ -71,7 +71,7 @@ async function replacePayslips(rows) {
             values,
         );
 
-        // 3️⃣ Deactivate ONLY rows that actually changed
+        // Deactivate ONLY rows that actually changed
         await client.query(`
             UPDATE payslips p
             SET is_active = false
@@ -83,7 +83,7 @@ async function replacePayslips(rows) {
               AND p.data_hash IS DISTINCT FROM t.data_hash;
         `);
 
-        // 4️⃣ Insert ONLY changed rows, capture IDs
+        // Insert ONLY changed rows, capture IDs
         const { rows: inserted } = await client.query(`
             INSERT INTO payslips (
                 employee_id, name, cnic_no, designation, bps,
@@ -109,7 +109,7 @@ async function replacePayslips(rows) {
             RETURNING id;
         `);
 
-        // 5️⃣ Collect reused + inserted payslip IDs
+        // Collect reused + inserted payslip IDs
         const { rows: reused } = await client.query(`
             SELECT p.id
             FROM payslips p

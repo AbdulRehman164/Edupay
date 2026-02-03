@@ -1,6 +1,6 @@
-import pool from '../config/db.js';
+import pool from '../../../config/db.js';
 import { updateEmployee } from '../services/employeeUpdate.service.js';
-import AppError from '../utils/AppError.js';
+import AppError from '../../../shared/utils/AppError.js';
 
 async function getEmployeesController(req, res) {
     const page = parseInt(req.query.page) || 1;

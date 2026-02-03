@@ -1,26 +1,23 @@
 import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
 import cors from 'cors';
-import uploadRoute from './routes/upload.route.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import errorHandler from './middleware/errorHandler.middleware.js';
-import jobStatusController from './controllers/jobStatus.controller.js';
-import employeeRoute from './routes/employee.route.js';
-import payslipsRoute from './routes/payslips.route.js';
+import errorHandler from './shared/middleware/errorHandler.middleware.js';
 import session from 'express-session';
 import { RedisStore } from 'connect-redis';
 import client from './config/redis.js';
 import passport from './config/passport.js';
-import authRoute from './routes/auth.route.js';
-import isAuth from './middleware/isAuth.middleware.js';
-import activeJobsController from './controllers/activeJobs.controller.js';
+import authRoute from './auth/auth.route.js';
+import isAuth from './shared/middleware/isAuth.middleware.js';
+import hrRoutes from './modules/hr/routes/index.js';
+import requireRole from './shared/middleware/requireRole.middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-dotenv.config();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -47,17 +44,19 @@ app.use(passport.session());
 
 app.use('/static', express.static(path.join(__dirname, '../templates')));
 
-// Public Routes
+/*************************** Public Routes ***************************/
 app.use('/api/auth', authRoute);
 
 app.use(isAuth);
 
-// Protected Routes
-app.use('/api/upload', uploadRoute);
-app.use('/api/payslips', payslipsRoute);
-app.get('/api/job-status/:id', jobStatusController);
-app.get('/api/active-jobs', activeJobsController);
-app.use('/api/employees/', employeeRoute);
+/*************************** Protected Routes ***************************/
+
+//hr
+app.use('/api/hr', requireRole('hr'), hrRoutes);
+
+//admin
+// admin routes here
+
 app.use(errorHandler);
 
 const port = process.env.PORT || 3000;

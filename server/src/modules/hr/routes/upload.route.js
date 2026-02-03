@@ -4,18 +4,15 @@ import {
     employeefileController,
     payslipfileController,
 } from '../controllers/fileUpload.controller.js';
-import requireRole from '../middleware/requireRole.middleware.js';
 
-const uploadRoute = Router();
+const uploadRoutes = Router();
 
-uploadRoute.use(requireRole('hr'));
+uploadRoutes.post('/payslipfile', upload.single('file'), payslipfileController);
 
-uploadRoute.post('/payslipfile', upload.single('file'), payslipfileController);
-
-uploadRoute.post(
+uploadRoutes.post(
     '/employeefile',
     upload.single('file'),
     employeefileController,
 );
 
-export default uploadRoute;
+export default uploadRoutes;

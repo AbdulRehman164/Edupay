@@ -98,7 +98,7 @@ const EditEmployee = () => {
 
     useEffect(() => {
         (async function () {
-            const res = await fetch(`/api/employees?search=${cnic}`);
+            const res = await fetch(`/api/hr/employees?search=${cnic}`);
             const json = await res.json();
             const { id, ...rest } = json.employees[0];
             setEmployee(rest);
@@ -123,7 +123,7 @@ const EditEmployee = () => {
             return;
         }
         (async function () {
-            const res = await fetch(`/api/employees/${employeeId}`, {
+            const res = await fetch(`/api/hr/employees/${employeeId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

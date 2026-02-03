@@ -15,9 +15,10 @@ const HrDashboard = () => {
     const [jobStatus, setJobStatus] = useState('');
     const [downloadId, setDownloadId] = useState(null);
 
+    /* --------------------------------- poll Active Jobs ---------------------------------*/
     useEffect(() => {
         (async () => {
-            const res = await fetch('/api/active-jobs');
+            const res = await fetch('/api/hr/jobs/active');
             const json = await res.json();
             if (res.ok) {
                 json.forEach((job) => {
@@ -30,12 +31,13 @@ const HrDashboard = () => {
         })();
     }, []);
 
+    /* --------------------------------- Upload file ---------------------------------*/
     useEffect(() => {
         if (!file) return;
         const formData = new FormData();
         formData.append('file', file);
         (async function () {
-            const res = await fetch('/api/upload/payslipfile', {
+            const res = await fetch('/api/hr/uploads/payslipfile', {
                 method: 'POST',
                 body: formData,
             });
@@ -50,12 +52,14 @@ const HrDashboard = () => {
             }
         })();
     }, [file]);
+
+    /* --------------------------------- poll Job Status ---------------------------------*/
     useEffect(() => {
         if (!jobId) return;
         if (jobStatus === 'completed' && prevJobIdRef.current === jobId) return;
         prevJobIdRef.current = jobId;
         const inetervalId = setInterval(async () => {
-            const res = await fetch(`/api/job-status/${jobId}`);
+            const res = await fetch(`/api/hr/jobs/status/${jobId}`);
             const json = await res.json();
             if (res.ok) {
                 setJobStatus(json.state);
@@ -136,16 +140,19 @@ const HrDashboard = () => {
           disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60
         "
                         onClick={async () => {
-                            const res = await fetch('/api/payslips/generate', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
+                            const res = await fetch(
+                                '/api/hr/payslips/generate',
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        type: 'upload',
+                                        batchId: uploadRes.batchId,
+                                    }),
                                 },
-                                body: JSON.stringify({
-                                    type: 'upload',
-                                    batchId: uploadRes.batchId,
-                                }),
-                            });
+                            );
                             const json = await res.json();
                             if (res.ok) {
                                 setJobId(json.jobId);
@@ -186,11 +193,11 @@ const HrDashboard = () => {
                     </span>
                 </div>
 
-                {jobStatus === 'completed' && (
+                {jobStatus === 'completed' ? (
                     <button
                         onClick={async () => {
                             const res = await fetch(
-                                `/api/payslips/download/${downloadId}`,
+                                `/api/hr/payslips/download/${downloadId}`,
                             );
                             const blob = await res.blob();
                             const url = URL.createObjectURL(blob);
@@ -200,14 +207,29 @@ const HrDashboard = () => {
                             a.click();
                             URL.revokeObjectURL(url);
                         }}
-                        className="
-          rounded-lg border border-teal-500 px-5 py-2 text-sm font-semibold
-          text-teal-600 transition hover:bg-teal-50 active:scale-95
-        "
+                        className="rounded-lg border border-teal-500 px-5 py-2 text-sm font-semibold text-teal-600 transition hover:bg-teal-50 active:scale-95"
                     >
                         Download ZIP
                     </button>
-                )}
+                ) : jobStatus === 'active' ||
+                  jobStatus === 'waiting' ||
+                  jobStatus === 'delayed' ? (
+                    <button
+                        onClick={async () => {
+                            const confirmCancel = window.confirm(
+                                'Are you sure you want to cancel this job?',
+                            );
+                            if (!confirmCancel) return;
+
+                            await fetch(`/api/hr/jobs/cancel/${jobId}`, {
+                                method: 'DELETE',
+                            });
+                        }}
+                        className="rounded-lg border border-red-500 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 active:scale-95"
+                    >
+                        Cancel Job
+                    </button>
+                ) : null}
             </div>
         </div>
     );

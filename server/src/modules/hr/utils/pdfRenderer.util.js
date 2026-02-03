@@ -19,9 +19,22 @@ async function getBrowser() {
     return browser;
 }
 
-export async function renderPdf(html, outputPath, filename) {
+import { UnrecoverableError } from 'bullmq';
+
+export async function renderPdf(html, outputPath, filename, signal) {
+    signal?.throwIfAborted();
+
     const browser = await getBrowser();
     const page = await browser.newPage();
+
+    const abortHandler = async () => {
+        try {
+            if (!page.isClosed()) await page.close();
+            await browser.close();
+        } catch {}
+    };
+
+    signal?.addEventListener('abort', abortHandler);
 
     try {
         await page.setContent(html, {
@@ -29,17 +42,29 @@ export async function renderPdf(html, outputPath, filename) {
             timeout: 30000,
         });
 
+        signal?.throwIfAborted();
+
         const buffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             margin: { top: '20mm', bottom: '20mm' },
         });
 
+        signal?.throwIfAborted();
+
         const filePath = path.join(outputPath, `${filename}.pdf`);
         await fs.promises.writeFile(filePath, buffer);
 
         return filePath;
+    } catch (err) {
+        if (signal?.aborted) {
+            // Ignore Puppeteer internal errors caused by cancellation
+            throw new UnrecoverableError(signal.reason || 'Job cancelled');
+        }
+        throw err;
     } finally {
+        signal?.removeEventListener('abort', abortHandler);
+
         if (!page.isClosed()) {
             await page.close();
         }
