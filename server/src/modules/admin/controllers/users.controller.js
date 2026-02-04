@@ -1,6 +1,6 @@
 import AppError from '../../../shared/utils/AppError.js';
 import usersRepository from '../repositories/users.repository.js';
-import { getPaginatedUsers } from '../services/users.service.js';
+import { getPaginatedUsers, createUser } from '../services/users.service.js';
 
 async function searchUsersController(req, res, next) {
     try {
@@ -27,4 +27,18 @@ async function getSingleUsersController(req, res, next) {
     }
 }
 
-export { getSingleUsersController, searchUsersController };
+async function createUserController(req, res, next) {
+    try {
+        const { username, password, role } = req.body;
+        const result = await createUser(username?.trim(), password, role);
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export {
+    getSingleUsersController,
+    searchUsersController,
+    createUserController,
+};

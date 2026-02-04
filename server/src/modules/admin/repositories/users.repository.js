@@ -37,4 +37,12 @@ async function countUsers(search) {
     return parseInt(res.rows[0].count);
 }
 
-export default { getUserById, searchUsers, countUsers };
+async function create({ username, password, role }) {
+    const query =
+        'INSERT INTO users (username, password, role) VALUES($1, $2, $3) RETURNING *';
+    const params = [username, password, role];
+    const res = await pool.query(query, params);
+    return res.rows[0];
+}
+
+export default { getUserById, searchUsers, countUsers, create };
