@@ -13,6 +13,7 @@ import authRoute from './auth/auth.route.js';
 import isAuth from './shared/middleware/isAuth.middleware.js';
 import hrRoutes from './modules/hr/routes/index.js';
 import requireRole from './shared/middleware/requireRole.middleware.js';
+import adminRoutes from './modules/admin/routes/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,7 +56,7 @@ app.use(isAuth);
 app.use('/api/hr', requireRole('hr'), hrRoutes);
 
 //admin
-// admin routes here
+app.use('/api/admin', requireRole('admin'), adminRoutes);
 
 app.use(errorHandler);
 
