@@ -36,9 +36,22 @@ async function createUserController(req, res, next) {
         next(e);
     }
 }
+async function deleteUserController(req, res, next) {
+    try {
+        const { id } = req.params;
+        const user = await usersRepository.remove(id);
+        if (!user) {
+            throw new AppError('User not found.', 401);
+        }
+        res.json({ message: 'User deleted sucessfully.' });
+    } catch (e) {
+        next(e);
+    }
+}
 
 export {
     getSingleUsersController,
     searchUsersController,
     createUserController,
+    deleteUserController,
 };

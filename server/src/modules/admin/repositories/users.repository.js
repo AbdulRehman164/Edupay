@@ -45,4 +45,9 @@ async function create({ username, password, role }) {
     return res.rows[0];
 }
 
-export default { getUserById, searchUsers, countUsers, create };
+async function remove(id) {
+    const res = await pool.query('DELETE FROM users WHERE id=$1', [id]);
+    return res.rowCount;
+}
+
+export default { getUserById, searchUsers, countUsers, create, remove };
