@@ -50,4 +50,19 @@ async function remove(id) {
     return res.rowCount;
 }
 
-export default { getUserById, searchUsers, countUsers, create, remove };
+async function changeUsername({ username, id }) {
+    const res = await pool.query(
+        'UPDATE users SET username=$1 WHERE id=$2 RETURNING id, username, role, created_at',
+        [username, id],
+    );
+    return res.rows[0];
+}
+
+export default {
+    getUserById,
+    searchUsers,
+    countUsers,
+    create,
+    remove,
+    changeUsername,
+};

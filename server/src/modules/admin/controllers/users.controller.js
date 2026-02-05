@@ -16,7 +16,7 @@ async function searchUsersController(req, res, next) {
 
 async function getSingleUsersController(req, res, next) {
     try {
-        const { id } = req.params;
+        const id = parseInt(req.params.id);
         const user = await usersRepository.getUserById(id);
         if (!user) {
             throw new AppError('User not found.', 404);
@@ -30,7 +30,7 @@ async function getSingleUsersController(req, res, next) {
 async function createUserController(req, res, next) {
     try {
         const { username, password, role } = req.body;
-        const result = await createUser(username?.trim(), password, role);
+        const result = await createUser(username, password, role);
         res.json(result);
     } catch (e) {
         next(e);
@@ -38,13 +38,30 @@ async function createUserController(req, res, next) {
 }
 async function deleteUserController(req, res, next) {
     try {
-        const { id } = req.params;
+        const id = parseInt(req.params.id);
         const user = await usersRepository.remove(id);
         if (!user) {
-            throw new AppError('User not found.', 401);
+            throw new AppError('User not found.', 404);
         }
         res.json({ message: 'User deleted sucessfully.' });
     } catch (e) {
+        next(e);
+    }
+}
+
+async function editUsernameController(req, res, next) {
+    try {
+        const username = req.body.username;
+        const id = parseInt(req.params.id);
+        const result = await usersRepository.changeUsername({ username, id });
+        if (!result) {
+            throw new AppError('User not found', 404);
+        }
+        res.json(result);
+    } catch (e) {
+        if (e.code === '23505') {
+            return next(new AppError('Username already exists.', 400));
+        }
         next(e);
     }
 }
@@ -54,4 +71,5 @@ export {
     searchUsersController,
     createUserController,
     deleteUserController,
+    editUsernameController,
 };
