@@ -12,7 +12,7 @@ async function searchUsers(search, limit, offset) {
     let query = 'SELECT id, username, role, created_at FROM users';
     let params = [];
     if (search) {
-        query += ' WHERE id ILIKE $1 OR name ILIKE $1';
+        query += ' WHERE id::text ILIKE $1 OR username ILIKE $1';
         params.push(`%${search}%`);
     }
     query += ` ORDER BY id LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
@@ -28,7 +28,7 @@ async function countUsers(search) {
     let params = [];
 
     if (search) {
-        query += ' WHERE id ILIKE $1 OR name ILIKE $1';
+        query += ' WHERE id::text ILIKE $1 OR username ILIKE $1';
         params.push(`%${search}%`);
     }
 

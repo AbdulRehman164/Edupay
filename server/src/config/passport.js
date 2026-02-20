@@ -41,11 +41,11 @@ passport.deserializeUser(async (id, done) => {
             [id],
         );
         if (result.rows.length === 0) {
-            done(null, false);
+            return done(null, false);
         }
-        done(null, result.rows[0]);
+        return done(null, result.rows[0]);
     } catch (err) {
-        done(err);
+        return done(err);
     }
 });
 

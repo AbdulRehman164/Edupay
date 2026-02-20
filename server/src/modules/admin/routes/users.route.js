@@ -23,4 +23,11 @@ usersRoutes.patch(
     editUsernameController,
 );
 
+//usersRoutes.patch(
+//    '/:id/role',
+//    validateIdParam,
+//    validateChangeRole,
+//    changeRoleController,
+//);
+
 export default usersRoutes;
