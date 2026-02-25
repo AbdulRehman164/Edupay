@@ -175,7 +175,7 @@ This separation ensures:
 
 ```bash
 # Clone repository
-git clone <repo-url>
+git clone https://github.com/AbdulRehman164/Edupay
 
 # Install backend dependencies
 cd server
