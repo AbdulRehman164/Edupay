@@ -1,3 +1,4 @@
+import { parse } from 'dotenv';
 import AppError from '../../../shared/utils/AppError.js';
 import usersRepository from '../repositories/users.repository.js';
 import { getPaginatedUsers, createUser } from '../services/users.service.js';
@@ -66,10 +67,25 @@ async function editUsernameController(req, res, next) {
     }
 }
 
+async function changeRoleController(req, res, next) {
+    try {
+        const role = req.body.role;
+        const id = parseInt(req.params.id);
+        const result = await usersRepository.changeRole({ role, id });
+        if (!result) {
+            throw new AppError('User not found', 404);
+        }
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     getSingleUsersController,
     searchUsersController,
     createUserController,
     deleteUserController,
     editUsernameController,
+    changeRoleController,
 };

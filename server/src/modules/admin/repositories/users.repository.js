@@ -58,6 +58,14 @@ async function changeUsername({ username, id }) {
     return res.rows[0];
 }
 
+async function changeRole({ role, id }) {
+    const res = await pool.query(
+        'UPDATE users SET role=$1 WHERE id=$2 RETURNING id, username, role, created_at',
+        [role, id],
+    );
+    return res.rows[0];
+}
+
 export default {
     getUserById,
     searchUsers,
@@ -65,4 +73,5 @@ export default {
     create,
     remove,
     changeUsername,
+    changeRole,
 };

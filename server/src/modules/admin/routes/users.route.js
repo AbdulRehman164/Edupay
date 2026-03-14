@@ -9,6 +9,8 @@ import {
 import validateCreateUser from '../middlewares/validateCreateUser.middleware.js';
 import validateIdParam from '../middlewares/validateIdParam.middleware.js';
 import validateEditUsername from '../middlewares/validateEditUsername.middleware.js';
+import validateChangeRole from '../middlewares/validateChangeRole.middleware.js';
+import { changeRoleController } from '../controllers/users.controller.js';
 
 const usersRoutes = Router();
 
@@ -23,11 +25,11 @@ usersRoutes.patch(
     editUsernameController,
 );
 
-//usersRoutes.patch(
-//    '/:id/role',
-//    validateIdParam,
-//    validateChangeRole,
-//    changeRoleController,
-//);
+usersRoutes.patch(
+    '/:id/role',
+    validateIdParam,
+    validateChangeRole,
+    changeRoleController,
+);
 
 export default usersRoutes;
