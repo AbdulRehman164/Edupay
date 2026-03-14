@@ -66,6 +66,14 @@ async function changeRole({ role, id }) {
     return res.rows[0];
 }
 
+async function resetPassword({ hashedPass, id }) {
+    const res = await pool.query(
+        'UPDATE users SET password=$1 WHERE id=$2 RETURNING id, username, role, created_at',
+        [hashedPass, id],
+    );
+    return res.rows[0];
+}
+
 export default {
     getUserById,
     searchUsers,
@@ -74,4 +82,5 @@ export default {
     remove,
     changeUsername,
     changeRole,
+    resetPassword,
 };

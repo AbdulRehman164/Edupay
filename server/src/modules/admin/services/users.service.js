@@ -2,6 +2,7 @@ import ROLES from '../../../constants/roles.js';
 import AppError from '../../../shared/utils/AppError.js';
 import usersRepository from '../repositories/users.repository.js';
 import hashPassword from '../utils/hashPassword.util.js';
+import crypto from 'crypto';
 
 async function getPaginatedUsers(search, page, limit) {
     const offset = (page - 1) * limit;
@@ -32,5 +33,17 @@ async function createUser(username, password, role) {
         throw e;
     }
 }
+async function resetPassword(id) {
+    const newPassword = crypto.randomBytes(10).toString('base64').slice(0, 10);
+    const hashedPass = await hashPassword(newPassword);
+    const result = await usersRepository.resetPassword({
+        id,
+        hashedPass,
+    });
+    if (!result) {
+        throw new AppError('User not found', 404);
+    }
+    return { ...result, password: newPassword };
+}
 
-export { getPaginatedUsers, createUser };
+export { getPaginatedUsers, createUser, resetPassword };

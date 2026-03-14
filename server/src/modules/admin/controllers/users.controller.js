@@ -1,7 +1,11 @@
 import { parse } from 'dotenv';
 import AppError from '../../../shared/utils/AppError.js';
 import usersRepository from '../repositories/users.repository.js';
-import { getPaginatedUsers, createUser } from '../services/users.service.js';
+import {
+    getPaginatedUsers,
+    createUser,
+    resetPassword,
+} from '../services/users.service.js';
 
 async function searchUsersController(req, res, next) {
     try {
@@ -81,6 +85,16 @@ async function changeRoleController(req, res, next) {
     }
 }
 
+async function resetPasswordController(req, res, next) {
+    try {
+        const id = parseInt(req.params.id);
+        const userWithNewPassword = await resetPassword(id);
+        res.json(userWithNewPassword);
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     getSingleUsersController,
     searchUsersController,
@@ -88,4 +102,5 @@ export {
     deleteUserController,
     editUsernameController,
     changeRoleController,
+    resetPasswordController,
 };
