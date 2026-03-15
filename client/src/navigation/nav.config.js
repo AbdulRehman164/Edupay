@@ -7,5 +7,5 @@ export const NAV_BY_DOMAIN = {
 
     accounts: [],
 
-    admin: [{ label: 'Home', to: '/admin', exact: true }],
+    admin: [],
 };

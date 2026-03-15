@@ -17,6 +17,9 @@ import RedirectRole from '../auth/RedirectRole';
 import AdminDashboard from '../domains/admin/AdminDashboard';
 import PayslipsLayout from '../domains/hr/PayslipsLayout';
 import EmployeesLayout from '../domains/hr/EmployeesLayout';
+import AdminLayout from '../domains/admin/AdminLayout';
+import NotFound from '../pages/notFound';
+import AdminUsersPage from '../domains/admin/AdminUsersPage';
 
 const router = createBrowserRouter([
     {
@@ -85,10 +88,23 @@ const router = createBrowserRouter([
                         element: <RequireRole roles={['admin']} />,
                         children: [
                             {
-                                index: true,
-                                element: <AdminDashboard />,
+                                element: <AdminLayout />,
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <AdminDashboard />,
+                                    },
+                                    {
+                                        path: 'users',
+                                        element: <AdminUsersPage />,
+                                    },
+                                ],
                             },
                         ],
+                    },
+                    {
+                        path: '*',
+                        element: <NotFound />,
                     },
                 ],
             },
