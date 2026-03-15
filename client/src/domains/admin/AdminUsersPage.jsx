@@ -111,6 +111,22 @@ function AdminUsersPage() {
             setActionLoading(false);
         }
     };
+    const handleRoleChange = async (user, newRole) => {
+        // Optimistic update
+        setUsers((u) =>
+            u.map((x) => (x.id === user.id ? { ...x, role: newRole } : x)),
+        );
+        try {
+            await api.updateRole(user.id, newRole);
+        } catch {
+            // Rollback on failure
+            setUsers((u) =>
+                u.map((x) =>
+                    x.id === user.id ? { ...x, role: user.role } : x,
+                ),
+            );
+        }
+    };
 
     // Helper
     function getPaginationRange(current, total) {
@@ -232,7 +248,15 @@ function AdminUsersPage() {
                                             </div>
                                         </td>
                                         <td className="px-5 py-3.5">
-                                            <RoleBadge role={user.role} />
+                                            <RoleBadge
+                                                role={user.role}
+                                                onRoleChange={(newRole) =>
+                                                    handleRoleChange(
+                                                        user,
+                                                        newRole,
+                                                    )
+                                                }
+                                            />
                                         </td>
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center justify-end gap-1">
@@ -276,7 +300,7 @@ function AdminUsersPage() {
                             </tbody>
                         </table>
 
-                        {users?.length === 0 && (
+                        {users === null && (
                             <div className="py-16 text-center text-sm text-gray-400">
                                 {search
                                     ? `No users found for "${search}"`
@@ -309,7 +333,15 @@ function AdminUsersPage() {
                                                 {user.username}
                                             </p>
                                             <div className="mt-0.5">
-                                                <RoleBadge role={user.role} />
+                                                <RoleBadge
+                                                    role={user.role}
+                                                    onRoleChange={(newRole) =>
+                                                        handleRoleChange(
+                                                            user,
+                                                            newRole,
+                                                        )
+                                                    }
+                                                />
                                             </div>
                                         </div>
                                     </div>

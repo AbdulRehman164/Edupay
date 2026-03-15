@@ -4,7 +4,6 @@ import { LayoutDashboard, Users, ShieldCheck, X } from 'lucide-react';
 const navItems = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/users', label: 'Users', icon: Users },
-    { to: '/admin/roles', label: 'Roles', icon: ShieldCheck },
 ];
 
 function Sidebar({ onNavigate }) {

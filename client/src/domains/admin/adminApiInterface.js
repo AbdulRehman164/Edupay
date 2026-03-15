@@ -21,6 +21,12 @@ const api = {
         fetch(`/api/admin/users/${id}/reset-password`, {
             method: 'POST',
         }).then((r) => r.json()),
+    updateRole: (id, role) =>
+        fetch(`/api/admin/users/${id}/role`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role }),
+        }).then((r) => r.json()),
 };
 
 export default api;
