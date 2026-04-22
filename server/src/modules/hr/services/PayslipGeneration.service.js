@@ -19,8 +19,6 @@ async function generatePayslipArchive(payslips, zipname, signal) {
     try {
         signal?.throwIfAborted();
 
-        const template = generatePayslipTemplate(payslips[0]);
-
         for (let i = 0; i < payslips.length; i += 30) {
             signal?.throwIfAborted();
 
@@ -28,6 +26,8 @@ async function generatePayslipArchive(payslips, zipname, signal) {
 
             for (const e of batch) {
                 signal?.throwIfAborted();
+
+                const template = generatePayslipTemplate(e);
 
                 const file = await renderPdf(
                     template,
