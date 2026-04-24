@@ -4,8 +4,6 @@ import BatchStats from './BatchStats';
 import BatchTable from './BatchTable';
 import DataEntryDashboardHeader from './DataEntryDashboardHeader';
 
-const PLACEHOLDER_BATCHES = [];
-
 export default function DataEntryDashboard() {
     const [open, setOpen] = useState(false);
 
@@ -15,9 +13,9 @@ export default function DataEntryDashboard() {
                 {/* Header */}
                 <DataEntryDashboardHeader />
                 {/* Stats */}
-                <BatchStats batches={PLACEHOLDER_BATCHES} />
+                <BatchStats batches={[]} />
                 {/* Table */}
-                <BatchTable batches={PLACEHOLDER_BATCHES} />
+                <BatchTable />
             </div>
 
             {/* FAB */}
