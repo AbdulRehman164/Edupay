@@ -10,4 +10,15 @@ async function createBatchController(req, res, next) {
     }
 }
 
-export default createBatchController;
+async function searchBatchesController(req, res, next) {
+    try {
+        const status = req.query?.status || null;
+        const search = req.query?.search?.trim() || '';
+        const result = await batchRepo.search({ status, search });
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export { createBatchController, searchBatchesController };

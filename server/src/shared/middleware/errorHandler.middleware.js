@@ -16,9 +16,8 @@ function errorHandler(err, req, res, next) {
             ...(err.details && { details: err.details }),
         });
     }
-
-    res.status(status).json({
-        message,
+    return res.status(status).json({
+        message: 'Something went wrong.',
     });
 }
 

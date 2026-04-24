@@ -8,13 +8,13 @@ const studentsRoutes = Router();
 //studentsRoutes.get('/', searchStudentsController);
 
 // data_entry only
-//studentsRoutes.post(
-//    '/upload',
-//    requireRole('data_entry'),
-//    upload.single('file'),
-//    parseExcel,
-//    uploadController,
-//);
+// studentsRoutes.post(
+//     '/upload',
+//     requireRole('data_entry'),
+//     upload.single('file'),
+//     parseExcel,
+//     uploadController,
+// );
 //studentsRoutes.post('/', requireRole('data_entry'), addStudentController);
 //studentsRoutes.delete(
 //    '/:studentId',

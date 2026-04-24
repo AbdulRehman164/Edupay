@@ -20,4 +20,29 @@ async function create({ semester, year, department, section, created_by }) {
     }
 }
 
-export default { create };
+async function search({ status, search }) {
+    const conditions = [];
+    const values = [];
+    let i = 1;
+
+    if (status) {
+        conditions.push(`b.status = $${i++}`);
+        values.push(status);
+    }
+    if (search) {
+        conditions.push(`s.reg_number ILIKE $${i++}`);
+        values.push(`%${search}%`);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const query = `
+        SELECT DISTINCT b.*
+        FROM ug_batch b
+        ${search ? 'JOIN ug_batch_student s ON s.batch_id = b.id' : ''}
+        ${where}
+    `;
+    const result = await pool.query(query, values);
+    return result.rows;
+}
+
+export default { create, search };
