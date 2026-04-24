@@ -20,6 +20,8 @@ import EmployeesLayout from '../domains/hr/EmployeesLayout';
 import AdminLayout from '../domains/admin/AdminLayout';
 import NotFound from '../pages/notFound';
 import AdminUsersPage from '../domains/admin/AdminUsersPage';
+import DataEntryDashboard from '../domains/accounts/data_entry/DataEntryDashboard';
+import AccountsDashbaord from '../domains/accounts/accounts/AccountsDashboard';
 
 const router = createBrowserRouter([
     {
@@ -99,6 +101,27 @@ const router = createBrowserRouter([
                                         element: <AdminUsersPage />,
                                     },
                                 ],
+                            },
+                        ],
+                    },
+                    {
+                        path: '/accounts/accounts',
+                        element: <RequireRole roles={['accounts']} />,
+                        children: [
+                            {
+                                index: true,
+                                element: <AccountsDashbaord />,
+                            },
+                        ],
+                    },
+
+                    {
+                        path: '/accounts/data_entry',
+                        element: <RequireRole roles={['data_entry']} />,
+                        children: [
+                            {
+                                index: true,
+                                element: <DataEntryDashboard />,
                             },
                         ],
                     },

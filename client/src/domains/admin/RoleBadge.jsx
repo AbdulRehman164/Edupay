@@ -8,7 +8,7 @@ const ROLE_STYLES = {
     accounts: 'bg-rose-100   text-rose-700   hover:bg-rose-200',
 };
 
-const ROLES = ['admin', 'hr', 'accounts'];
+const ROLES = ['admin', 'hr', 'accounts', 'data_entry'];
 
 function RoleBadge({ role, onRoleChange }) {
     const [open, setOpen] = useState(false);

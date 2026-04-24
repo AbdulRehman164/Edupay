@@ -13,6 +13,10 @@ function RedirectRole() {
             return <Navigate to="/admin" replace />;
         case 'hr':
             return <Navigate to="/hr" replace />;
+        case 'accounts':
+            return <Navigate to="/accounts/accounts" replace />;
+        case 'data_entry':
+            return <Navigate to="/accounts/data_entry" replace />;
         default:
             return <Navigate to="/login" replace />;
     }

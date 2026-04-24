@@ -62,6 +62,7 @@ function CreateModal({ onConfirm, onClose, loading }) {
                         <option value="hr">HR</option>
                         <option value="accounts">Accounts</option>
                         <option value="admin">Admin</option>
+                        <option value="data_entry">Data Entry</option>
                     </select>
                 </div>
             </div>
