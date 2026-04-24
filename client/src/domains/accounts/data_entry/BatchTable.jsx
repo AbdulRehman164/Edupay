@@ -45,7 +45,7 @@ function BatchTable() {
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
                     <h2 className="text-sm font-semibold text-gray-800">
-                        All Batches
+                        Open Batches
                     </h2>
                     <p className="text-xs text-gray-400 mt-0.5">
                         {batches.length} total entries

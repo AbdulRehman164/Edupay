@@ -45,4 +45,10 @@ async function search({ status, search }) {
     return result.rows;
 }
 
-export default { create, search };
+async function getStats() {
+    const result = await pool.query(
+        "SELECT COUNT(*) AS total_batches, COUNT(*) FILTER (WHERE STATUS='open') AS open_batches, COUNT(*) FILTER (WHERE STATUS='close') AS closed_batches, COUNT(DISTINCT department) AS departments FROM ug_batch",
+    );
+    return result.rows[0];
+}
+export default { create, search, getStats };

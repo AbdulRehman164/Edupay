@@ -21,4 +21,17 @@ async function searchBatchesController(req, res, next) {
     }
 }
 
-export { createBatchController, searchBatchesController };
+async function getBatchesStatsController(req, res, next) {
+    try {
+        const result = await batchRepo.getStats();
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export {
+    createBatchController,
+    searchBatchesController,
+    getBatchesStatsController,
+};
