@@ -2,10 +2,11 @@ import { Router } from 'express';
 import requireRole from '../../../shared/middleware/requireRole.middleware.js';
 import parseExcel from '../../../shared/middleware/parseExcel.middleware.js';
 import uploadController from '../controllers/upload.controller.js';
+import { searchStudentsController } from '../controllers/student.controller.js';
 
-const studentsRoutes = Router();
+const studentsRoutes = Router({ mergeParams: true });
 
-//studentsRoutes.get('/', searchStudentsController);
+studentsRoutes.get('/', searchStudentsController);
 
 // data_entry only
 // studentsRoutes.post(

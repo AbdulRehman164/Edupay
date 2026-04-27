@@ -22,6 +22,7 @@ import NotFound from '../pages/notFound';
 import AdminUsersPage from '../domains/admin/AdminUsersPage';
 import DataEntryDashboard from '../domains/accounts/data_entry/DataEntryDashboard';
 import AccountsDashbaord from '../domains/accounts/accounts/AccountsDashboard';
+import Batch from '../domains/accounts/data_entry/Batch';
 
 const router = createBrowserRouter([
     {
@@ -122,6 +123,10 @@ const router = createBrowserRouter([
                             {
                                 index: true,
                                 element: <DataEntryDashboard />,
+                            },
+                            {
+                                path: 'batches/:id',
+                                element: <Batch />,
                             },
                         ],
                     },

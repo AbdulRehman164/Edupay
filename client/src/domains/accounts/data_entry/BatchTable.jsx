@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Search, X } from 'lucide-react';
+import { useNavigate } from 'react-router';
 function BatchTable() {
     const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -8,6 +9,7 @@ function BatchTable() {
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const searchTimeout = useRef();
+    const navigate = useNavigate();
 
     useEffect(() => {
         setLoading(true);
@@ -105,7 +107,10 @@ function BatchTable() {
                                 {batches.map((b) => (
                                     <tr
                                         key={b.id}
-                                        className="hover:bg-gray-50 transition-colors group"
+                                        onClick={() =>
+                                            navigate(`batches/${b.id}`)
+                                        }
+                                        className="hover:bg-gray-50 transition-colors group cursor-pointer"
                                     >
                                         <td className="px-6 py-4 font-medium text-gray-900">
                                             {b.department}
