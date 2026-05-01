@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function BatchStats() {
+function DashboardBatchStats() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [stats, setStats] = useState({
@@ -73,4 +73,4 @@ function BatchStats() {
     );
 }
 
-export default BatchStats;
+export default DashboardBatchStats;

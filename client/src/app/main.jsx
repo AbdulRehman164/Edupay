@@ -20,9 +20,9 @@ import EmployeesLayout from '../domains/hr/EmployeesLayout';
 import AdminLayout from '../domains/admin/AdminLayout';
 import NotFound from '../pages/notFound';
 import AdminUsersPage from '../domains/admin/AdminUsersPage';
-import DataEntryDashboard from '../domains/accounts/data_entry/DataEntryDashboard';
+import DataEntryDashboard from '../domains/accounts/data_entry/dashboard/DataEntryDashboard';
 import AccountsDashbaord from '../domains/accounts/accounts/AccountsDashboard';
-import Batch from '../domains/accounts/data_entry/Batch';
+import Batch from '../domains/accounts/data_entry/batch/Batch';
 
 const router = createBrowserRouter([
     {

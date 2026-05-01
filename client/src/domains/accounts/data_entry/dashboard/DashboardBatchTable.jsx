@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router';
-function BatchTable() {
+function DashboardBatchTable() {
     const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -148,4 +148,4 @@ function BatchTable() {
     );
 }
 
-export default BatchTable;
+export default DashboardBatchTable;

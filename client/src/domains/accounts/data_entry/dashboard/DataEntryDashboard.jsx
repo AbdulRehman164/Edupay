@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CreateBatchModal from './CreateBatchModal';
-import BatchStats from './BatchStats';
-import BatchTable from './BatchTable';
+import DashboardBatchStats from './DashboardBatchStats';
+import DashboardBatchTable from './DashboardBatchTable';
 import DataEntryDashboardHeader from './DataEntryDashboardHeader';
 
 export default function DataEntryDashboard() {
@@ -13,9 +13,9 @@ export default function DataEntryDashboard() {
                 {/* Header */}
                 <DataEntryDashboardHeader />
                 {/* Stats */}
-                <BatchStats batches={[]} />
+                <DashboardBatchStats batches={[]} />
                 {/* Table */}
-                <BatchTable />
+                <DashboardBatchTable />
             </div>
 
             {/* FAB */}

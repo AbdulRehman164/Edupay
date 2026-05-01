@@ -1,5 +1,5 @@
 import Field from './Field';
-import { DEPARTMENTS, SEMESTERS, SECTIONS } from '../constants';
+import { DEPARTMENTS, SEMESTERS, SECTIONS } from '../../constants';
 import { useState } from 'react';
 
 function inputClass(error) {

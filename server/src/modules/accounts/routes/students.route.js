@@ -3,19 +3,20 @@ import requireRole from '../../../shared/middleware/requireRole.middleware.js';
 import parseExcel from '../../../shared/middleware/parseExcel.middleware.js';
 import uploadController from '../controllers/upload.controller.js';
 import { searchStudentsController } from '../controllers/student.controller.js';
+import upload from '../middleware/upload.middleware.js';
 
 const studentsRoutes = Router({ mergeParams: true });
 
 studentsRoutes.get('/', searchStudentsController);
 
 // data_entry only
-// studentsRoutes.post(
-//     '/upload',
-//     requireRole('data_entry'),
-//     upload.single('file'),
-//     parseExcel,
-//     uploadController,
-// );
+studentsRoutes.post(
+    '/upload',
+    requireRole('data_entry'),
+    upload.single('file'),
+    parseExcel,
+    uploadController,
+);
 //studentsRoutes.post('/', requireRole('data_entry'), addStudentController);
 //studentsRoutes.delete(
 //    '/:studentId',

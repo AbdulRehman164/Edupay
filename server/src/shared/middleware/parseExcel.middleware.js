@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import fs from 'fs';
+import path from 'path';
 
 function getDataIndex(data) {
     let dataIndex;
