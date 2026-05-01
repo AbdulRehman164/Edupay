@@ -9,11 +9,13 @@ function Batch() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    async function fetchStudents() {
+    async function fetchStudents(search = '') {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/accounts/batches/${id}/students/`);
+            const res = await fetch(
+                `/api/accounts/batches/${id}/students?search=${search}`,
+            );
             if (!res.ok) {
                 throw new Error(
                     'Something went wrong while fetching students. Please try again later.',
@@ -42,7 +44,11 @@ function Batch() {
                     </div>
                 )}
 
-                <BatchStudents loading={loading} students={students} />
+                <BatchStudents
+                    loading={loading}
+                    students={students}
+                    fetchStudents={fetchStudents}
+                />
             </div>
         </div>
     );

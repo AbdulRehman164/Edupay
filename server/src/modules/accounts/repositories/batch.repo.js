@@ -30,7 +30,7 @@ async function search({ status, search }) {
         values.push(status);
     }
     if (search) {
-        conditions.push(`s.reg_number ILIKE $${i++}`);
+        conditions.push(`s.reg_number ILIKE $${i} or s.name ILIKE $${i++}`);
         values.push(`%${search}%`);
     }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';

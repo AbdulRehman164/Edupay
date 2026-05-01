@@ -61,7 +61,7 @@ function DashboardBatchTable() {
                     <input
                         value={searchInput}
                         onChange={(e) => handleSearchInput(e.target.value)}
-                        placeholder="Search by registration no."
+                        placeholder="Search by reg-no or name..."
                         className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-9 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition"
                     />
                     {searchInput && (

@@ -1,9 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import StudentsTable from './StudentsTable';
-import { Loader } from 'lucide-react';
-function BatchStudents({ loading, students }) {
+import { Loader, X } from 'lucide-react';
+function BatchStudents({ loading, students, fetchStudents }) {
     const [searchInput, setSearchInput] = useState('');
+    const [search, setSearch] = useState('');
+    const searchTimeout = useRef();
+
+    useEffect(() => {
+        fetchStudents(search);
+    }, [search]);
+    function handleSearchInput(val) {
+        setSearchInput(val);
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            setSearch(val.trim());
+        }, 400);
+    }
+
     return (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -23,7 +37,7 @@ function BatchStudents({ loading, students }) {
                     <input
                         value={searchInput}
                         onChange={(e) => handleSearchInput(e.target.value)}
-                        placeholder="Search by registration no."
+                        placeholder="Search by reg-no or name..."
                         className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-9 pr-9 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition"
                     />
                     {searchInput && (

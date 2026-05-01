@@ -1,11 +1,24 @@
 import pool from '../../../config/db.js';
 
-async function get(batchId) {
-    const res = await pool.query(
-        'SELECT * from ug_batch_student WHERE batch_id=$1',
-        [batchId],
-    );
-    return res.rows;
+async function get({ batchId, search }) {
+    const conditions = [];
+    const values = [];
+    let i = 1;
+
+    if (search) {
+        conditions.push(`reg_number ILIKE $${i} OR name ILIKE $${i++}`);
+        values.push(`%${search}%`);
+    }
+    conditions.push(`batch_id=$${i++}`);
+    values.push(batchId);
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const query = `
+        SELECT * from ug_batch_student
+        ${where}
+    `;
+    const result = await pool.query(query, values);
+    return result.rows;
 }
 
 async function insertStudents({ data, batchId }) {
