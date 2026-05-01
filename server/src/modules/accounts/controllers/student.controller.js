@@ -11,4 +11,15 @@ async function searchStudentsController(req, res, next) {
     }
 }
 
-export { searchStudentsController };
+async function ugSubmitController(req, res, next) {
+    try {
+        const id = req.params?.studentId;
+        const action = req.query.submit;
+        const result = await studentRepo.ugSubmit({ id, action });
+        res.json(`Updated ${result} student`);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export { searchStudentsController, ugSubmitController };

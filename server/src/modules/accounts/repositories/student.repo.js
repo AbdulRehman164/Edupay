@@ -15,7 +15,7 @@ async function get({ batchId, search }) {
 
     const query = `
         SELECT * from ug_batch_student
-        ${where}
+        ${where} ORDER BY reg_number
     `;
     const result = await pool.query(query, values);
     return result.rows;
@@ -34,4 +34,12 @@ async function insertStudents({ data, batchId }) {
     return { inserted, skipped };
 }
 
-export default { get, insertStudents };
+async function ugSubmit({ id, action }) {
+    const res = await pool.query(
+        'UPDATE ug_batch_student SET ug_form_submitted=$1::BOOLEAN WHERE id=$2',
+        [action, id],
+    );
+    return res.rowCount;
+}
+
+export default { get, insertStudents, ugSubmit };

@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import StudentsTable from './StudentsTable';
 import { Loader, X } from 'lucide-react';
-function BatchStudents({ loading, students, fetchStudents }) {
+function BatchStudents({
+    loading,
+    students,
+    fetchStudents,
+    batchId,
+    setStudents,
+}) {
     const [searchInput, setSearchInput] = useState('');
     const [search, setSearch] = useState('');
     const searchTimeout = useRef();
@@ -56,7 +62,11 @@ function BatchStudents({ loading, students, fetchStudents }) {
                         <Loader />
                     </div>
                 ) : (
-                    <StudentsTable students={students} />
+                    <StudentsTable
+                        students={students}
+                        batchId={batchId}
+                        setStudents={setStudents}
+                    />
                 )}
             </div>
         </div>

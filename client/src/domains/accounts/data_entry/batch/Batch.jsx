@@ -48,6 +48,8 @@ function Batch() {
                     loading={loading}
                     students={students}
                     fetchStudents={fetchStudents}
+                    batchId={id}
+                    setStudents={setStudents}
                 />
             </div>
         </div>

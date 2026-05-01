@@ -1,5 +1,23 @@
-function StudentsTable({ students }) {
-    function handleSubmit(s, action) {}
+function StudentsTable({ students, batchId, setStudents }) {
+    async function handleSubmit(s, action) {
+        const res = await fetch(
+            `/api/accounts/batches/${batchId}/students/submit/${s.id}?submit=${action}`,
+            { method: 'PATCH' },
+        );
+        if (res.ok) {
+            setStudents((prev) =>
+                prev.map((student) =>
+                    student.id === s.id
+                        ? {
+                              ...student,
+                              ug_form_submitted:
+                                  action == 'true' ? true : false,
+                          }
+                        : student,
+                ),
+            );
+        }
+    }
     return (
         <table className="w-full text-sm min-w-max">
             <thead>
@@ -28,7 +46,7 @@ function StudentsTable({ students }) {
                         <td className="px-6 py-4 text-gray-500 capitalize w-50">
                             {s.ug_form_submitted ? (
                                 <span
-                                    onClick={() => handleSubmit(s, 'unsubmit')}
+                                    onClick={() => handleSubmit(s, 'false')}
                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all duration-150"
                                 >
                                     <svg
@@ -48,7 +66,7 @@ function StudentsTable({ students }) {
                                 </span>
                             ) : (
                                 <button
-                                    onClick={() => handleSubmit(s, 'submit')}
+                                    onClick={() => handleSubmit(s, 'true')}
                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 active:scale-95 transition-all duration-150 shadow-sm cursor-pointer"
                                 >
                                     Submit UG Form
