@@ -42,4 +42,11 @@ async function ugSubmit({ id, action }) {
     return res.rowCount;
 }
 
-export default { get, insertStudents, ugSubmit };
+async function remove(id) {
+    const res = await pool.query('DELETE FROM ug_batch_student WHERE id=$1', [
+        id,
+    ]);
+    return res.rowCount;
+}
+
+export default { get, insertStudents, ugSubmit, remove };

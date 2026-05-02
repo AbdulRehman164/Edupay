@@ -22,4 +22,18 @@ async function ugSubmitController(req, res, next) {
     }
 }
 
-export { searchStudentsController, ugSubmitController };
+async function deleteStudentController(req, res, next) {
+    try {
+        const id = req.params?.studentId;
+        const result = await studentRepo.remove(id);
+        res.json(`Deleted ${result} student`);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export {
+    searchStudentsController,
+    ugSubmitController,
+    deleteStudentController,
+};
