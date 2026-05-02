@@ -32,8 +32,20 @@ async function deleteStudentController(req, res, next) {
     }
 }
 
+async function addStudentController(req, res, next) {
+    try {
+        const data = [req.body];
+        const batchId = req.params.id;
+        const result = await studentRepo.insertStudents({ data, batchId });
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     searchStudentsController,
     ugSubmitController,
     deleteStudentController,
+    addStudentController,
 };

@@ -6,6 +6,7 @@ import {
     searchStudentsController,
     ugSubmitController,
     deleteStudentController,
+    addStudentController,
 } from '../controllers/student.controller.js';
 import upload from '../middleware/upload.middleware.js';
 import validateSubmitAction from '../middleware/validateSubmitAction.js';
@@ -28,7 +29,7 @@ studentsRoutes.patch(
     validateSubmitAction,
     ugSubmitController,
 );
-//studentsRoutes.post('/', requireRole('data_entry'), addStudentController);
+studentsRoutes.post('/', requireRole('data_entry'), addStudentController);
 studentsRoutes.delete(
     '/:studentId',
     requireRole('data_entry'),

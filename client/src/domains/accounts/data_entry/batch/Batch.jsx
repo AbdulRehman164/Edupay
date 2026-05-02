@@ -2,12 +2,14 @@ import { useParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import BatchUploadButton from './BatchUploadButton';
 import BatchStudents from './BatchStudents';
+import AddStudentModal from './AddStudentModal';
 
 function Batch() {
     const { id } = useParams();
     const [students, setStudents] = useState();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [open, setOpen] = useState(false);
 
     async function fetchStudents(search = '') {
         setLoading(true);
@@ -52,6 +54,20 @@ function Batch() {
                     setStudents={setStudents}
                 />
             </div>
+
+            <button
+                onClick={() => setOpen(true)}
+                className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-2xl z-10"
+                aria-label="Create batch"
+            >
+                +
+            </button>
+
+            <AddStudentModal
+                open={open}
+                setOpen={setOpen}
+                fetchStudents={fetchStudents}
+            />
         </div>
     );
 }
