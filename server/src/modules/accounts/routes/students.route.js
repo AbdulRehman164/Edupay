@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import requireRole from '../../../shared/middleware/requireRole.middleware.js';
 import parseExcel from '../../../shared/middleware/parseExcel.middleware.js';
-import uploadController from '../controllers/upload.controller.js';
 import {
     searchStudentsController,
     ugSubmitController,
     deleteStudentController,
     addStudentController,
+    uploadController,
 } from '../controllers/student.controller.js';
 import upload from '../middleware/upload.middleware.js';
 import validateSubmitAction from '../middleware/validateSubmitAction.js';
