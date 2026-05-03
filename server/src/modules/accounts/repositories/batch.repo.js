@@ -20,19 +20,16 @@ async function create({ semester, year, department, section, created_by }) {
     }
 }
 
-async function search({ status, search }) {
+async function search({ search }) {
     const conditions = [];
     const values = [];
     let i = 1;
 
-    if (status) {
-        conditions.push(`b.status = $${i++}`);
-        values.push(status);
-    }
     if (search) {
         conditions.push(`s.reg_number ILIKE $${i} or s.name ILIKE $${i++}`);
         values.push(`%${search}%`);
     }
+    conditions.push(`b.status = 'open'`);
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const query = `
@@ -51,4 +48,18 @@ async function getStats() {
     );
     return result.rows[0];
 }
-export default { create, search, getStats };
+async function closeBatch(id) {
+    const result = await pool.query(
+        "UPDATE ug_batch SET status='close' WHERE id=$1",
+        [id],
+    );
+    return result.rowCount;
+}
+
+async function getById(id) {
+    const result = await pool.query('SELECT * FROM ug_batch WHERE id = $1', [
+        id,
+    ]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+}
+export default { create, search, getStats, closeBatch, getById };

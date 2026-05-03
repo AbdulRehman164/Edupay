@@ -5,6 +5,7 @@ import {
     createBatchController,
     searchBatchesController,
     getBatchesStatsController,
+    closeBatchController,
 } from '../controllers/batch.controller.js';
 import validateBatchPayload from '../middleware/validateBatchPayload.middleware.js';
 
@@ -22,6 +23,12 @@ batchesRoutes.post(
     requireRole('data_entry'),
     validateBatchPayload,
     createBatchController,
+);
+
+batchesRoutes.patch(
+    '/:id/close',
+    requireRole('data_entry'),
+    closeBatchController,
 );
 
 export default batchesRoutes;

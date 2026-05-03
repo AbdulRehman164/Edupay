@@ -11,6 +11,7 @@ async function get({ batchId, search }) {
     }
     conditions.push(`batch_id=$${i++}`);
     values.push(batchId);
+
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const query = `

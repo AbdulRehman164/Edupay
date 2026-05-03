@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import BatchUploadButton from './BatchUploadButton';
 import BatchStudents from './BatchStudents';
 import AddStudentModal from './AddStudentModal';
+import CloseBatchButton from './CloseBatchButton';
 import { useAuth } from '../../../auth/AuthContext';
 
 function Batch() {
@@ -21,8 +22,10 @@ function Batch() {
                 `/api/accounts/batches/${id}/students?search=${search}`,
             );
             if (!res.ok) {
+                const json = await res.json();
                 throw new Error(
-                    'Something went wrong while fetching students. Please try again later.',
+                    json.message ||
+                        'Something went wrong while fetching students. Please try again later.',
                 );
             }
             const json = await res.json();
@@ -65,6 +68,7 @@ function Batch() {
 
             {user.role === 'data_entry' && (
                 <>
+                    <CloseBatchButton setError={setError} />
                     <button
                         onClick={() => setOpen(true)}
                         className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-700 active:scale-95 transition-all flex items-center justify-center text-2xl z-10"

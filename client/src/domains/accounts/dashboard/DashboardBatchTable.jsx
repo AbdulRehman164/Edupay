@@ -17,7 +17,7 @@ function DashboardBatchTable() {
         (async function () {
             try {
                 const res = await fetch(
-                    `/api/accounts/batches?status=open&search=${search}`,
+                    `/api/accounts/batches?search=${search}`,
                 );
 
                 if (!res.ok) {
