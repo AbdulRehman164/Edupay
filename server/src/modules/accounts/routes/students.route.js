@@ -7,13 +7,21 @@ import {
     deleteStudentController,
     addStudentController,
     uploadController,
+    feeVerifyController,
 } from '../controllers/student.controller.js';
 import upload from '../middleware/upload.middleware.js';
-import validateSubmitAction from '../middleware/validateSubmitAction.js';
+import validateAction from '../middleware/validateAction.js';
 
 const studentsRoutes = Router({ mergeParams: true });
 
 studentsRoutes.get('/', searchStudentsController);
+
+studentsRoutes.patch(
+    '/verify/:studentId',
+    requireRole('accounts'),
+    validateAction,
+    feeVerifyController,
+);
 
 // data_entry only
 studentsRoutes.post(
@@ -26,7 +34,7 @@ studentsRoutes.post(
 studentsRoutes.patch(
     '/submit/:studentId',
     requireRole('data_entry'),
-    validateSubmitAction,
+    validateAction,
     ugSubmitController,
 );
 studentsRoutes.post('/', requireRole('data_entry'), addStudentController);

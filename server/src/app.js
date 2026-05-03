@@ -60,7 +60,7 @@ app.use('/api/hr', requireRole('hr'), hrRoutes);
 app.use('/api/admin', requireRole('admin'), adminRoutes);
 
 //accounts
-app.use('/api/accounts', requireRole('admin', 'data_entry'), accountRoutes);
+app.use('/api/accounts', requireRole('accounts', 'data_entry'), accountRoutes);
 
 // app.use(errorHandler);
 

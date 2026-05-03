@@ -14,7 +14,7 @@ async function searchStudentsController(req, res, next) {
 async function ugSubmitController(req, res, next) {
     try {
         const id = req.params?.studentId;
-        const action = req.query.submit;
+        const action = req.query.action;
         const result = await studentRepo.ugSubmit({ id, action });
         res.json(`Updated ${result} student`);
     } catch (e) {
@@ -53,6 +53,16 @@ async function uploadController(req, res, next) {
         next(e);
     }
 }
+async function feeVerifyController(req, res, next) {
+    try {
+        const id = req.params?.studentId;
+        const action = req.query.action;
+        const result = await studentRepo.verifyFee({ id, action });
+        res.json(`${result} student fee verfied.`);
+    } catch (e) {
+        next(e);
+    }
+}
 
 export {
     searchStudentsController,
@@ -60,4 +70,5 @@ export {
     deleteStudentController,
     addStudentController,
     uploadController,
+    feeVerifyController,
 };

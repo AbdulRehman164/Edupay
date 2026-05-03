@@ -1,7 +1,6 @@
-import Field from '../dashboard/Field';
-import { DEPARTMENTS, SEMESTERS, SECTIONS } from '../../constants';
+import Field from './Field';
+import { DEPARTMENTS, SEMESTERS, SECTIONS } from '../constants';
 import { useState } from 'react';
-import { useParams } from 'react-router';
 
 function inputClass(error) {
     return [
@@ -12,21 +11,28 @@ function inputClass(error) {
     ].join(' ');
 }
 
-const initialForm = { reg_no: '', name: '' };
+const initialForm = { department: '', semester: '', year: '', section: '' };
 
-function AddStudentModal({ open, setOpen, fetchStudents }) {
-    const { id } = useParams();
+function CreateBatchModal({ open, setOpen }) {
     const [form, setForm] = useState(initialForm);
     const [errors, setErrors] = useState({});
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const currentYear = new Date().getFullYear();
+
     function validate() {
         const e = {};
-        if (!form.name) e.name = 'Name is required';
-        if (!form.reg_no) e.reg_no = 'Registration No. is required';
-        if (form.reg_no && !/^\d+-ag-\d+$/.test(form.reg_no))
-            e.reg_no = 'Wrong registration no. format';
+        if (!form.department) e.department = 'Department is required';
+        if (!form.semester) e.semester = 'Semester is required';
+        if (!form.year) {
+            e.year = 'Year is required';
+        } else {
+            const y = parseInt(form.year);
+            if (isNaN(y) || y < 2000 || y > currentYear + 1)
+                e.year = `Must be between 2000 and ${currentYear + 1}`;
+        }
+        if (!form.section) e.section = 'Section is required';
         return e;
     }
 
@@ -43,13 +49,15 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
             return;
         }
         const payload = {
-            Name: form.name,
-            'Registration No.': form.reg_no,
+            department: form.department.toLowerCase(),
+            semester: Number(form.semester),
+            year: parseInt(form.year),
+            section: form.section,
         };
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/accounts/batches/${id}/students/`, {
+            const res = await fetch('/api/accounts/batches', {
                 method: 'POST',
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
@@ -57,14 +65,9 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
             });
             if (!res.ok) {
                 const err = await res.json();
-                throw new Error(err.message || 'Failed to add student');
-            }
-            const json = await res.json();
-            if (json.skipped.length > 0) {
-                throw new Error('Student already exists');
+                throw new Error(err.message || 'Failed to create batch');
             }
             handleClose();
-            await fetchStudents();
         } catch (err) {
             setError(err.message);
         } finally {
@@ -93,10 +96,10 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
                             <div className="flex items-start justify-between">
                                 <div>
                                     <h2 className="text-lg font-bold text-gray-900">
-                                        Add Student
+                                        Create Batch
                                     </h2>
                                     <p className="text-sm text-gray-400 mt-0.5">
-                                        Fill in the details to add a student
+                                        Fill in the details to open a new batch
                                     </p>
                                 </div>
                                 <button
@@ -110,30 +113,67 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
 
                         {/* Modal body */}
                         <div className="px-6 py-5 space-y-4">
-                            <div className="grid grid-cols-2 gap-4"></div>
-
-                            <Field label="Name" error={errors.name}>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={form.name}
+                            <Field label="Department" error={errors.department}>
+                                <select
+                                    name="department"
+                                    value={form.department}
                                     onChange={handleChange}
-                                    placeholder={`e.g. Abdul Rehman`}
-                                    className={inputClass(errors.name)}
-                                />
+                                    className={inputClass(errors.department)}
+                                >
+                                    <option value="">Select department</option>
+                                    {DEPARTMENTS.map((d) => (
+                                        <option key={d} value={d}>
+                                            {d}
+                                        </option>
+                                    ))}
+                                </select>
                             </Field>
 
-                            <Field
-                                label="Registration No."
-                                error={errors.reg_no}
-                            >
+                            <div className="grid grid-cols-2 gap-4">
+                                <Field label="Semester" error={errors.semester}>
+                                    <select
+                                        name="semester"
+                                        value={form.semester}
+                                        onChange={handleChange}
+                                        className={inputClass(errors.semester)}
+                                    >
+                                        <option value="">Select</option>
+                                        {SEMESTERS.map((s) => (
+                                            <option key={s} value={s}>
+                                                {s}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </Field>
+
+                                <Field label="Section" error={errors.section}>
+                                    <select
+                                        name="section"
+                                        value={form.section}
+                                        onChange={handleChange}
+                                        className={inputClass(errors.section)}
+                                    >
+                                        <option value="">Select</option>
+                                        {SECTIONS.map((s) => (
+                                            <option key={s} value={s}>
+                                                {s.charAt(0).toUpperCase() +
+                                                    s.slice(1)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </Field>
+                            </div>
+
+                            <Field label="Year" error={errors.year}>
                                 <input
-                                    type="text"
-                                    name="reg_no"
-                                    value={form.reg_no}
+                                    type="number"
+                                    name="year"
+                                    value={form.year}
                                     onChange={handleChange}
-                                    placeholder={`e.g. 2022-ag-8701`}
-                                    className={inputClass(errors.reg_no)}
+                                    placeholder={`e.g. ${currentYear}`}
+                                    min="2000"
+                                    max={currentYear + 1}
+                                    className={inputClass(errors.year)}
                                 />
                             </Field>
                             {/* API error */}
@@ -156,7 +196,7 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
                                 onClick={handleSubmit}
                                 className="px-5 py-2.5 text-sm font-semibold text-white bg-gray-900 hover:bg-gray-700 rounded-lg transition-colors active:scale-95"
                             >
-                                {loading ? 'Adding...' : 'Add Student'}
+                                {loading ? 'Creating...' : 'Create Batch'}
                             </button>
                         </div>
                     </div>
@@ -166,4 +206,4 @@ function AddStudentModal({ open, setOpen, fetchStudents }) {
     );
 }
 
-export default AddStudentModal;
+export default CreateBatchModal;

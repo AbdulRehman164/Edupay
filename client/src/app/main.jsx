@@ -20,9 +20,19 @@ import EmployeesLayout from '../domains/hr/EmployeesLayout';
 import AdminLayout from '../domains/admin/AdminLayout';
 import NotFound from '../pages/notFound';
 import AdminUsersPage from '../domains/admin/AdminUsersPage';
-import DataEntryDashboard from '../domains/accounts/data_entry/dashboard/DataEntryDashboard';
-import AccountsDashbaord from '../domains/accounts/accounts/AccountsDashboard';
-import Batch from '../domains/accounts/data_entry/batch/Batch';
+import AccountsDashbaord from '../domains/accounts/dashboard/AccountsDashboard';
+import Batch from '../domains/accounts/batch/Batch';
+
+const accountsChildren = [
+    {
+        index: true,
+        element: <AccountsDashbaord />,
+    },
+    {
+        path: 'batches/:id',
+        element: <Batch />,
+    },
+];
 
 const router = createBrowserRouter([
     {
@@ -108,27 +118,13 @@ const router = createBrowserRouter([
                     {
                         path: '/accounts/accounts',
                         element: <RequireRole roles={['accounts']} />,
-                        children: [
-                            {
-                                index: true,
-                                element: <AccountsDashbaord />,
-                            },
-                        ],
+                        children: accountsChildren,
                     },
 
                     {
                         path: '/accounts/data_entry',
                         element: <RequireRole roles={['data_entry']} />,
-                        children: [
-                            {
-                                index: true,
-                                element: <DataEntryDashboard />,
-                            },
-                            {
-                                path: 'batches/:id',
-                                element: <Batch />,
-                            },
-                        ],
+                        children: accountsChildren,
                     },
                     {
                         path: '*',

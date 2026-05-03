@@ -49,4 +49,12 @@ async function remove(id) {
     return res.rowCount;
 }
 
-export default { get, insertStudents, ugSubmit, remove };
+async function verifyFee({ id, action }) {
+    const res = await pool.query(
+        'UPDATE ug_batch_student SET fee_verified=$1::BOOLEAN WHERE id=$2',
+        [action, id],
+    );
+    return res.rowCount;
+}
+
+export default { get, insertStudents, ugSubmit, remove, verifyFee };

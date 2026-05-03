@@ -1,8 +1,11 @@
-function DataEntryDashboardHeader() {
+import { useAuth } from '../../../auth/AuthContext';
+function AccountsDashboardHeader() {
+    const { user } = useAuth();
     return (
         <div className="mb-8">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
-                Accounts &rsaquo; Data Entry
+                Accounts &rsaquo;{' '}
+                {user.role === 'data_entry' ? 'Data Entry' : 'Accounts'}
             </p>
             <div className="flex items-end justify-between">
                 <div>
@@ -18,4 +21,4 @@ function DataEntryDashboardHeader() {
     );
 }
 
-export default DataEntryDashboardHeader;
+export default AccountsDashboardHeader;
