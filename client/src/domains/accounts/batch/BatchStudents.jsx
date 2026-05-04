@@ -25,7 +25,7 @@ function BatchStudents({
     }
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden pb-12">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
                     <h2 className="text-sm font-semibold text-gray-800">

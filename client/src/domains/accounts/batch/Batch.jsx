@@ -4,6 +4,7 @@ import BatchUploadButton from './BatchUploadButton';
 import BatchStudents from './BatchStudents';
 import AddStudentModal from './AddStudentModal';
 import CloseBatchButton from './CloseBatchButton';
+import DownloadClassFormationButton from './DwonloadClassFormationButton';
 import { useAuth } from '../../../auth/AuthContext';
 
 function Batch() {
@@ -84,6 +85,7 @@ function Batch() {
                     />
                 </>
             )}
+            {user.role === 'accounts' && <DownloadClassFormationButton />}
         </div>
     );
 }

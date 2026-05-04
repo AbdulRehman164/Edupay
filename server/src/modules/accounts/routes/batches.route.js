@@ -6,6 +6,7 @@ import {
     searchBatchesController,
     getBatchesStatsController,
     closeBatchController,
+    downloadFormationController,
 } from '../controllers/batch.controller.js';
 import validateBatchPayload from '../middleware/validateBatchPayload.middleware.js';
 
@@ -16,6 +17,8 @@ batchesRoutes.use('/:id/students', studentsRoutes);
 
 batchesRoutes.get('/', searchBatchesController);
 batchesRoutes.get('/stats', getBatchesStatsController);
+
+batchesRoutes.get('/:id/download-formation', downloadFormationController);
 
 // data_entry only
 batchesRoutes.post(

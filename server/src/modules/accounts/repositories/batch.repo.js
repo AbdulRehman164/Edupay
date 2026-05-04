@@ -62,4 +62,20 @@ async function getById(id) {
     ]);
     return result.rows.length > 0 ? result.rows[0] : null;
 }
-export default { create, search, getStats, closeBatch, getById };
+
+async function getEligibleStudentsByBatch(batchId) {
+    const { rows } = await pool.query(
+        'SELECT reg_number, name FROM ug_batch_student WHERE batch_id = $1',
+        [batchId],
+    );
+    console.log(rows);
+    return rows;
+}
+export default {
+    create,
+    search,
+    getStats,
+    closeBatch,
+    getById,
+    getEligibleStudentsByBatch,
+};

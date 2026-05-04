@@ -1,4 +1,5 @@
 import batchRepo from '../repositories/batch.repo.js';
+import batchServices from '../services/batch.service.js';
 
 async function createBatchController(req, res, next) {
     const data = req.body;
@@ -38,10 +39,29 @@ async function closeBatchController(req, res, next) {
         next(e);
     }
 }
+async function downloadFormationController(req, res, next) {
+    try {
+        const id = req.params?.id;
+        const { buffer, batch } =
+            await batchServices.generateClassFormationSheet(id);
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${batch.department}-${batch.semester}-${batch.section}-${batch.year}.xlsx"`,
+        );
+        res.send(buffer);
+    } catch (e) {
+        next(e);
+    }
+}
 
 export {
     createBatchController,
     searchBatchesController,
     getBatchesStatsController,
     closeBatchController,
+    downloadFormationController,
 };
