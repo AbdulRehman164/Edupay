@@ -65,7 +65,7 @@ async function getById(id) {
 
 async function getEligibleStudentsByBatch(batchId) {
     const { rows } = await pool.query(
-        'SELECT reg_number, name FROM ug_batch_student WHERE batch_id = $1',
+        'SELECT reg_number, name FROM ug_batch_student WHERE batch_id = $1 AND ug_form_submitted = true::BOOLEAN AND fee_verified = true::BOOLEAN',
         [batchId],
     );
     console.log(rows);
