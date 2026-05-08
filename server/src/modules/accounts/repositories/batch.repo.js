@@ -68,7 +68,6 @@ async function getEligibleStudentsByBatch(batchId) {
         'SELECT reg_number, name FROM ug_batch_student WHERE batch_id = $1 AND ug_form_submitted = true::BOOLEAN AND fee_verified = true::BOOLEAN',
         [batchId],
     );
-    console.log(rows);
     return rows;
 }
 export default {
