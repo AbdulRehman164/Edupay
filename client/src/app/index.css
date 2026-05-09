@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
 
+* {
+    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
+
+
 @keyframes slide-in {
     from {
         opacity: 0;
@@ -13,44 +19,54 @@
     }
 }
 
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.mobile-menu {
+    animation: slide-down .2s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+
 .animate-slide-in {
     animation: slide-in 0.25s ease-out;
 }
 
-
-* {
-    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-}
-
-@keyframes slide-down {
+@keyframes toast-in {
     from {
         opacity: 0;
-        transform: translateY(-6px);
+        transform: translateY(-10px) scale(.96);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
-
-* {
-    font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
-}
-
-@keyframes slide-down {
+@keyframes toast-out {
     from {
-        opacity: 0;
-        transform: translateY(-6px);
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 
     to {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 0;
+        transform: translateY(-8px) scale(.96);
     }
 }
 
-.mobile-menu {
-    animation: slide-down .2s cubic-bezier(.16, 1, .3, 1) both;
+@theme {
+    --animate-toast-in: toast-in .25s cubic-bezier(.16, 1, .3, 1) forwards;
+    --animate-toast-out: toast-out .25s cubic-bezier(.4, 0, 1, 1) forwards;
 }

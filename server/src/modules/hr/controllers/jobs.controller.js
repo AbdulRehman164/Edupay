@@ -57,5 +57,30 @@ async function cancelJobController(req, res, next) {
         next(e);
     }
 }
+async function completedJobsController(req, res, next) {
+    try {
+        const completed = await payslipQueue.getCompleted(0, 200);
 
-export { activeJobsController, jobStatusController, cancelJobController };
+        const userJobs = completed
+            .filter((job) => job.data.userId === req.user.id)
+            .slice(0, 10)
+            .map((job) => ({
+                jobId: job.id,
+                type: job.name,
+                status: 'completed',
+                downloadId: job.data.downloadId,
+                completedAt: job.finishedOn,
+            }));
+
+        res.json(userJobs);
+    } catch (e) {
+        next(e);
+    }
+}
+
+export {
+    activeJobsController,
+    jobStatusController,
+    cancelJobController,
+    completedJobsController,
+};

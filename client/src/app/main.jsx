@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import './index.css';
 import AppLayout from '../layouts/AppLayout';
-import HrDashboard from '../domains/hr/HrDashboard';
+import HrDashboard from '../domains/hr/dashboard/HrDashboard';
 import Employees from '../domains/hr/Employees';
 import EditEmployee from '../domains/hr/EditEmployee';
 import Payslips from '../domains/hr/Payslips';
