@@ -13,13 +13,17 @@ passport.use(
                     [username],
                 );
                 if (result.rows.length === 0) {
-                    return done(null, false);
+                    return done(null, false, {
+                        message: 'Invalid credentials',
+                    });
                 }
                 const user = result.rows[0];
                 const match = await bcrypt.compare(password, user.password);
 
                 if (!match) {
-                    return done(null, false, { message: 'Wrong password' });
+                    return done(null, false, {
+                        message: 'Invalid credentials',
+                    });
                 }
                 const { password: psd, ...safeUser } = user;
                 return done(null, safeUser);
