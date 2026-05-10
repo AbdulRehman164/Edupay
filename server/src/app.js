@@ -44,6 +44,8 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/static', express.static(path.join(__dirname, '../templates')));
+
 /*************************** Public Routes ***************************/
 app.use('/api/auth', authRoute);
 
