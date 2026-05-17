@@ -24,13 +24,13 @@ function generatePayslipTemplate(payslip) {
     const { allowances, deductions } = payslip.json;
 
     Object.keys(allowances).forEach((key) => {
-        const tr = `<tr><th>${key}</th><td>${allowances[key]}</td></tr>`;
+        const tr = `<tr><th>${key.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase())}</th><td>${allowances[key]}</td></tr>`;
         allowancesTable.append(tr);
     });
 
     const deductionsTable = $('table.deductions');
     Object.keys(deductions).forEach((key) => {
-        const tr = `<tr><th>${key}</th><td>${deductions[key]}</td></tr>`;
+        const tr = `<tr><th>${key.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase())}</th><td>${deductions[key]}</td></tr>`;
         deductionsTable.append(tr);
     });
 
