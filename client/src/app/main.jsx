@@ -5,7 +5,7 @@ import './index.css';
 import AppLayout from '../layouts/AppLayout';
 import HrDashboard from '../domains/hr/dashboard/HrDashboard';
 import Employees from '../domains/hr/employee/Employees';
-import EditEmployee from '../domains/hr/EditEmployee';
+import EditEmployee from '../domains/hr/employee/EditEmployee';
 import Payslips from '../domains/hr/Payslips';
 import EmployeePayslips from '../domains/hr/EmployeePayslips';
 import Login from '../pages/Login';
