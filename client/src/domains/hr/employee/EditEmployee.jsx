@@ -255,19 +255,6 @@ const EditEmployee = () => {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
-                * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
-                .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-                .section-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#94a3b8; padding-bottom:10px; border-bottom:1px solid #f1f5f9; margin-bottom:14px; }
-                .btn-save { background:#0f766e; color:#fff; border-radius:8px; padding:9px 22px; font-size:13px; font-weight:600; cursor:pointer; border:none; display:inline-flex;align-items:center;gap:6px; transition:background .15s,transform .1s; }
-                .btn-save:hover:not(:disabled) { background:#0d6660; }
-                .btn-save:active:not(:disabled) { transform:scale(.97); }
-                .btn-save:disabled { background:#9ca3af; cursor:not-allowed; }
-                .btn-back { display:inline-flex;align-items:center;gap:5px; font-size:13px; font-weight:500; color:#64748b; background:transparent; border:none; cursor:pointer; padding:0; }
-                .btn-back:hover { color:#0f172a; }
-            `}</style>
-
             <SuccessPopup
                 show={showSuccess}
                 message="Employee updated successfully"
@@ -275,15 +262,16 @@ const EditEmployee = () => {
             />
 
             <div className="max-w-3xl mx-auto px-6 py-8 space-y-5">
-                {/* ── Back + title ── */}
-                <div className="flex items-center gap-3">
-                    <button className="btn-back" onClick={() => navigate(-1)}>
-                        <BackIcon /> Back
-                    </button>
-                </div>
+                {/* ── Back ── */}
+                <button
+                    className="inline-flex items-center gap-[5px] text-[13px] font-medium text-slate-500 bg-transparent border-none cursor-pointer p-0 hover:text-slate-900"
+                    onClick={() => navigate(-1)}
+                >
+                    <BackIcon /> Back
+                </button>
 
                 {/* ── Employee identity header ── */}
-                <div className="card px-6 py-5 flex items-center gap-4">
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-5 flex items-center gap-4">
                     <Avatar name={employee.name} />
                     <div>
                         <h1 className="text-base font-semibold text-slate-800">
@@ -300,8 +288,13 @@ const EditEmployee = () => {
 
                 {/* ── Form sections ── */}
                 {grouped.map(({ groupKey, groupLabel, keys }) => (
-                    <div key={groupKey} className="card px-6 py-5">
-                        <p className="section-title">{groupLabel}</p>
+                    <div
+                        key={groupKey}
+                        className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-5"
+                    >
+                        <p className="text-[11px] font-bold uppercase tracking-[0.07em] text-slate-400 pb-2.5 border-b border-slate-100 mb-3.5">
+                            {groupLabel}
+                        </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                             {keys.map((key) => (
                                 <Field
@@ -325,7 +318,7 @@ const EditEmployee = () => {
                         <span />
                     )}
                     <button
-                        className="btn-save"
+                        className="bg-teal-700 text-white rounded-lg px-[22px] py-[9px] text-[13px] font-semibold cursor-pointer border-none inline-flex items-center gap-1.5 transition-[background,transform] duration-150 hover:enabled:bg-teal-800 active:enabled:scale-[0.97] disabled:bg-slate-400 disabled:cursor-not-allowed"
                         onClick={handleSubmit}
                         disabled={!isDirty || isSaving}
                     >

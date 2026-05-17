@@ -170,23 +170,6 @@ const Payslips = () => {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
-                * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
-                .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-                .table-row:hover td { background:#f8fafc; cursor:pointer; }
-                .btn-open { display:inline-flex;align-items:center;gap:5px; font-size:12px; font-weight:600; color:#0f766e; border:1px solid #99f6e4; border-radius:7px; padding:5px 12px; transition:background .15s; white-space:nowrap; background:transparent; cursor:pointer; }
-                .btn-open:hover { background:#f0fdfa; }
-                .search-wrap { position:relative; }
-                .search-input { width:100%; border:1.5px solid #e5e7eb; border-radius:10px; padding:10px 40px; font-size:14px; outline:none; transition:border-color .2s, box-shadow .2s; background:#fff; color:#0f172a; }
-                .search-input:focus { border-color:#0f766e; box-shadow:0 0 0 3px rgba(15,118,110,.08); }
-                .search-input::placeholder { color:#94a3b8; }
-                .search-icon { position:absolute;left:13px;top:50%;transform:translateY(-50%); pointer-events:none; }
-                .clear-btn { position:absolute;right:11px;top:50%;transform:translateY(-50%); background:transparent;border:none;cursor:pointer;padding:3px;border-radius:4px;color:#94a3b8;display:flex;align-items:center; }
-                .clear-btn:hover { color:#475569; }
-                .spinner-wrap { position:absolute;right:12px;top:50%;transform:translateY(-50%); }
-            `}</style>
-
             <div className="max-w-3xl mx-auto px-6 py-8 space-y-5">
                 {/* ── Page header ── */}
                 <div>
@@ -199,12 +182,12 @@ const Payslips = () => {
                 </div>
 
                 {/* ── Search bar ── */}
-                <div className="search-wrap">
-                    <span className="search-icon">
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <SearchIcon />
                     </span>
                     <input
-                        className="search-input"
+                        className="w-full border-[1.5px] border-slate-200 rounded-[10px] py-2.5 pl-10 pr-10 text-sm outline-none transition-[border-color,box-shadow] duration-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:shadow-[0_0_0_3px_rgba(15,118,110,0.08)]"
                         type="text"
                         placeholder="Search by name or CNIC…"
                         value={query}
@@ -212,13 +195,13 @@ const Payslips = () => {
                         autoFocus
                     />
                     {isLoading && (
-                        <span className="spinner-wrap">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2">
                             <Spinner />
                         </span>
                     )}
                     {!isLoading && query && (
                         <button
-                            className="clear-btn"
+                            className="absolute right-[11px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-[3px] rounded text-slate-400 flex items-center hover:text-slate-600"
                             onClick={() => setQuery('')}
                         >
                             <ClearIcon />
@@ -235,14 +218,8 @@ const Payslips = () => {
 
                 {/* ── Results table ── */}
                 {(isLoading || employees.length > 0) && (
-                    <div className="card overflow-hidden">
-                        <div
-                            className="px-5 py-3 flex items-center justify-between"
-                            style={{
-                                borderBottom: '1px solid #f1f5f9',
-                                background: '#fafafa',
-                            }}
-                        >
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div className="px-5 py-3 flex items-center justify-between border-b border-slate-100 bg-slate-50">
                             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
                                 Results
                             </p>
@@ -264,11 +241,7 @@ const Payslips = () => {
                                     : employees.map((emp) => (
                                           <tr
                                               key={emp.id}
-                                              className="table-row"
-                                              style={{
-                                                  borderBottom:
-                                                      '1px solid #f8fafc',
-                                              }}
+                                              className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer"
                                               onClick={() =>
                                                   navigate(
                                                       `/hr/payslips/${emp.cnic_no}`,
@@ -290,7 +263,7 @@ const Payslips = () => {
                                               </td>
                                               <td className="px-5 py-3.5 text-right">
                                                   <button
-                                                      className="btn-open"
+                                                      className="inline-flex items-center gap-[5px] text-xs font-semibold text-teal-700 border border-teal-200 rounded-[7px] px-3 py-[5px] bg-transparent cursor-pointer transition-colors duration-150 whitespace-nowrap hover:bg-teal-50"
                                                       onClick={(e) => {
                                                           e.stopPropagation();
                                                           navigate(
@@ -310,8 +283,10 @@ const Payslips = () => {
 
                 {/* ── Empty state ── */}
                 {showEmpty && (
-                    <div className="card px-6 py-12 text-center">
-                        <SearchIcon />
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-12 text-center">
+                        <div className="flex justify-center">
+                            <SearchIcon />
+                        </div>
                         <p className="text-sm font-medium text-slate-600 mt-3">
                             No employees found
                         </p>
@@ -323,7 +298,7 @@ const Payslips = () => {
 
                 {/* ── Idle state ── */}
                 {showIdle && (
-                    <div className="card px-6 py-12 text-center">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-12 text-center">
                         <div className="flex justify-center mb-3 opacity-30">
                             <SearchIcon />
                         </div>

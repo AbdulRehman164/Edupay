@@ -275,30 +275,17 @@ const EmployeePayslips = () => {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
-                * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
-                .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-                .table-row:hover td { background:#f8fafc; }
-                .btn-primary { background:#0f766e; color:#fff; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; border:none; display:inline-flex;align-items:center;gap:6px; transition:background .15s,transform .1s; }
-                .btn-primary:hover:not(:disabled) { background:#0d6660; }
-                .btn-primary:active:not(:disabled) { transform:scale(.97); }
-                .btn-primary:disabled { background:#9ca3af; cursor:not-allowed; }
-                .btn-danger { background:transparent; color:#dc2626; border:1px solid #fca5a5; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; transition:background .15s; }
-                .btn-danger:hover { background:#fef2f2; }
-                .btn-back { display:inline-flex;align-items:center;gap:5px; font-size:13px; font-weight:500; color:#64748b; background:transparent; border:none; cursor:pointer; padding:0; }
-                .btn-back:hover { color:#0f172a; }
-                .month-chip { display:inline-flex;align-items:center;justify-content:center; background:#f1f5f9; color:#475569; border-radius:8px; width:42px;height:38px; font-size:11px;font-weight:700;line-height:1.1;text-align:center;text-transform:uppercase; flex-shrink:0; }
-            `}</style>
-
             <div className="max-w-3xl mx-auto px-6 py-8 space-y-5">
                 {/* ── Back ── */}
-                <button className="btn-back" onClick={() => navigate(-1)}>
+                <button
+                    className="inline-flex items-center gap-[5px] text-[13px] font-medium text-slate-500 bg-transparent border-none cursor-pointer p-0 hover:text-slate-900"
+                    onClick={() => navigate(-1)}
+                >
                     <BackIcon /> Back
                 </button>
 
                 {/* ── Header card ── */}
-                <div className="card px-6 py-5 flex items-center justify-between gap-4">
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-5 flex items-center justify-between gap-4">
                     <div>
                         <h1 className="text-base font-semibold text-slate-800">
                             Payslips
@@ -313,7 +300,7 @@ const EmployeePayslips = () => {
 
                         {inProgressStatuses.includes(job?.status) && (
                             <button
-                                className="btn-danger"
+                                className="bg-transparent text-red-600 border border-red-300 rounded-lg px-3.5 py-1.5 text-xs font-semibold cursor-pointer transition-colors duration-150 hover:bg-red-50"
                                 onClick={handleCancel}
                             >
                                 Cancel
@@ -322,7 +309,7 @@ const EmployeePayslips = () => {
 
                         {!jobInProgress && (
                             <button
-                                className="btn-primary"
+                                className="bg-teal-700 text-white rounded-lg px-[18px] py-2 text-[13px] font-semibold cursor-pointer border-none inline-flex items-center gap-1.5 transition-[background,transform] duration-150 hover:enabled:bg-teal-800 active:enabled:scale-[0.97] disabled:bg-slate-400 disabled:cursor-not-allowed"
                                 disabled={
                                     payslips.length === 0 || isDownloading
                                 }
@@ -351,7 +338,7 @@ const EmployeePayslips = () => {
 
                 {/* ── Job progress bar ── */}
                 {jobInProgress && (
-                    <div className="card px-5 py-4 flex items-center gap-4">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-5 py-4 flex items-center gap-4">
                         <Spinner className="h-4 w-4 text-teal-600" />
                         <div className="flex-1">
                             <p className="text-sm font-medium text-slate-700">
@@ -367,14 +354,8 @@ const EmployeePayslips = () => {
                 )}
 
                 {/* ── Payslips table ── */}
-                <div className="card overflow-hidden">
-                    <div
-                        className="px-5 py-3.5 flex items-center justify-between"
-                        style={{
-                            borderBottom: '1px solid #f1f5f9',
-                            background: '#fafafa',
-                        }}
-                    >
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div className="px-5 py-3.5 flex items-center justify-between border-b border-slate-100 bg-slate-50">
                         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
                             Payslip Records
                         </p>
@@ -411,14 +392,11 @@ const EmployeePayslips = () => {
                                 payslips.map((p) => (
                                     <tr
                                         key={`${p.month}-${p.year}`}
-                                        className="table-row"
-                                        style={{
-                                            borderBottom: '1px solid #f8fafc',
-                                        }}
+                                        className="border-b border-slate-50 hover:bg-slate-50"
                                     >
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-3">
-                                                <div className="month-chip">
+                                                <div className="inline-flex flex-col items-center justify-center bg-slate-100 text-slate-500 rounded-lg w-[42px] h-[38px] text-[11px] font-bold leading-tight text-center uppercase flex-shrink-0">
                                                     {MONTHS[(p.month ?? 1) - 1]}
                                                     <br />
                                                     {p.year}
