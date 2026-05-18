@@ -13,7 +13,7 @@ function inputClass(error) {
 
 const initialForm = { department: '', semester: '', year: '', section: '' };
 
-function CreateBatchModal({ open, setOpen }) {
+function CreateBatchModal({ open, setOpen, searchBatches }) {
     const [form, setForm] = useState(initialForm);
     const [errors, setErrors] = useState({});
     const [error, setError] = useState(null);
@@ -68,6 +68,7 @@ function CreateBatchModal({ open, setOpen }) {
                 throw new Error(err.message || 'Failed to create batch');
             }
             handleClose();
+            searchBatches();
         } catch (err) {
             setError(err.message);
         } finally {

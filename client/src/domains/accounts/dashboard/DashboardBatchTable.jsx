@@ -2,37 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router';
-function DashboardBatchTable() {
-    const [batches, setBatches] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+
+function DashboardBatchTable({ setSearch, batches, loading, error }) {
     const [searchInput, setSearchInput] = useState('');
-    const [search, setSearch] = useState('');
     const searchTimeout = useRef();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setLoading(true);
-        setError(null);
-        (async function () {
-            try {
-                const res = await fetch(
-                    `/api/accounts/batches?search=${search}`,
-                );
-
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Something went wrong.');
-                }
-                const json = await res.json();
-                setBatches(json);
-            } catch (e) {
-                setError(e.message);
-            } finally {
-                setLoading(false);
-            }
-        })();
-    }, [search]);
 
     const handleSearchInput = (val) => {
         setSearchInput(val);
