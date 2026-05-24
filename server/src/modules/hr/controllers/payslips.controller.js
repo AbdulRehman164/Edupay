@@ -5,7 +5,7 @@ import { queuePayslipJob } from '../services/PayslipGeneration.service.js';
 
 async function fileDownloadController(req, res) {
     const { id } = req.params;
-    const filePath = `generated/${id}`;
+    const filePath = `generated/${id}/${id}`;
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename=${id}`);
     const stream = fs.createReadStream(filePath);

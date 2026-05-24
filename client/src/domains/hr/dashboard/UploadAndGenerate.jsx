@@ -17,6 +17,74 @@ function UploadAndGenerate({ handleDownload }) {
     const [jobStatus, setJobStatus] = useState('');
     const [downloadId, setDownloadId] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [emailState, setEmailState] = useState({
+        loading: false,
+        error: '',
+        status: null,
+    });
+
+    // Use a ref so the polling callback always reads the latest downloadId
+    const downloadIdRef = useRef(downloadId);
+    useEffect(() => {
+        downloadIdRef.current = downloadId;
+    }, [downloadId]);
+
+    const handleRetryFailed = async (batchId) => {
+        setEmailState((prev) => ({ ...prev, loading: true, error: '' })); // ✅ preserve status
+        const res = await fetch(`/api/hr/emails/${batchId}/retry`, {
+            method: 'POST',
+        });
+        const json = await res.json();
+        if (!res.ok) {
+            setEmailState((prev) => ({
+                ...prev,
+                loading: false,
+                error: json.message,
+            })); // ✅ preserve status
+            return;
+        }
+        pollEmailSendStatus(batchId);
+    };
+
+    const handleSendEmails = async (batchId) => {
+        setEmailState((prev) => ({ ...prev, loading: true, error: '' })); // ✅ preserve status
+        const res = await fetch(`/api/hr/emails/${batchId}/send`, {
+            method: 'POST',
+        });
+        const json = await res.json();
+        if (!res.ok) {
+            setEmailState((prev) => ({
+                ...prev,
+                loading: false,
+                error: json.message,
+            })); // ✅ preserve status
+            return;
+        }
+        pollEmailSendStatus(batchId);
+    };
+
+    const pollEmailSendStatus = (batchId) => {
+        const id = setInterval(async () => {
+            const statusRes = await fetch(`/api/hr/emails/${batchId}/status`);
+            const statusJson = await statusRes.json();
+            if (!statusRes.ok) {
+                clearInterval(id);
+                setEmailState({
+                    loading: false,
+                    error: statusJson.message,
+                    status: null,
+                });
+                return;
+            }
+            setEmailState({
+                loading: statusJson.pending > 0,
+                error: '',
+                status: statusJson,
+            });
+            if (statusJson.pending === 0) clearInterval(id);
+        }, 1000);
+        return id;
+    };
 
     const handleCancel = async () => {
         if (!window.confirm('Cancel the running job?')) return;
@@ -49,39 +117,61 @@ function UploadAndGenerate({ handleDownload }) {
         }
     };
 
-    // poll active job status
+    // Poll active job status
     useEffect(() => {
         if (!jobId) return;
+
+        let id;
         const poll = async () => {
             const res = await fetch(`/api/hr/jobs/status/${jobId}`);
             const json = await res.json();
             if (res.ok) setJobStatus(json.state);
+
             if (json.state === 'completed' || json.state === 'failed') {
                 clearInterval(id);
+                if (downloadIdRef.current) {
+                    pollEmailSendStatus(downloadIdRef.current);
+                }
             }
         };
+
         poll();
-        const id = setInterval(poll, 1000);
+        id = setInterval(poll, 1000);
         return () => clearInterval(id);
     }, [jobId]);
 
-    // fetch active jobs on mount
+    // Fetch active jobs on mount
     useEffect(() => {
         (async () => {
             const res = await fetch('/api/hr/jobs/active');
-            const json = await res.json();
+            const job = await res.json();
             if (res.ok) {
-                json.forEach((job) => {
-                    if (job.type === 'generate-for-upload') {
-                        setJobId(job.jobId);
-                        setDownloadId(job.downloadId);
+                setJobId(job.jobId);
+                setDownloadId(job.downloadId);
+
+                // ✅ fetch email status immediately so the correct button renders on first paint
+                if (job.downloadId) {
+                    const statusRes = await fetch(
+                        `/api/hr/emails/${job.downloadId}/status`,
+                    );
+                    const statusJson = await statusRes.json();
+                    if (statusRes.ok) {
+                        setEmailState({
+                            loading: statusJson.pending > 0,
+                            error: '',
+                            status: statusJson,
+                        });
+                        // resume polling if there are still pending emails
+                        if (statusJson.pending > 0) {
+                            pollEmailSendStatus(job.downloadId);
+                        }
                     }
-                });
+                }
             }
         })();
     }, []);
 
-    // upload file
+    // Upload file
     useEffect(() => {
         if (!file) return;
         const formData = new FormData();
@@ -216,13 +306,63 @@ function UploadAndGenerate({ handleDownload }) {
                     </div>
 
                     {jobStatus === 'completed' && downloadId && (
-                        <button
-                            className="bg-transparent text-teal-700 border border-teal-200 rounded-lg px-3 py-1.25 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors duration-150 cursor-pointer whitespace-nowrap hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            onClick={() => handleDownload(downloadId)}
-                        >
-                            <DownloadIcon className="h-3.5 w-3.5" />
-                            Download ZIP
-                        </button>
+                        <div className="flex flex-col items-end gap-1.5">
+                            <div className="flex gap-x-2">
+                                <button
+                                    className="bg-transparent text-teal-700 border border-teal-200 rounded-lg px-3 py-1.25 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors duration-150 cursor-pointer whitespace-nowrap hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    onClick={() => handleDownload(downloadId)}
+                                >
+                                    <DownloadIcon className="h-3.5 w-3.5" />
+                                    Download ZIP
+                                </button>
+
+                                {emailState.status?.pending <= 0 &&
+                                emailState.status?.failed > 0 ? (
+                                    <button
+                                        className="bg-transparent text-teal-700 border border-teal-200 rounded-lg px-3 py-1.25 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors duration-150 cursor-pointer whitespace-nowrap hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={() =>
+                                            handleRetryFailed(downloadId)
+                                        }
+                                        disabled={emailState.loading}
+                                    >
+                                        Retry Failed
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="bg-transparent text-teal-700 border border-teal-200 rounded-lg px-3 py-1.25 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors duration-150 cursor-pointer whitespace-nowrap hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={() =>
+                                            handleSendEmails(downloadId)
+                                        }
+                                        disabled={emailState.loading}
+                                    >
+                                        {emailState.loading && <Spinner />}
+                                        {emailState.loading
+                                            ? 'Sending…'
+                                            : 'Send Emails'}
+                                    </button>
+                                )}
+                            </div>
+                            {emailState.error && (
+                                <p className="text-xs text-red-500">
+                                    {emailState.error}
+                                </p>
+                            )}
+                            {emailState.status && (
+                                <div className="flex items-center gap-3 text-xs text-slate-500">
+                                    <span className="text-amber-500 font-medium">
+                                        {emailState.status.pending} pending
+                                    </span>
+                                    <span className="text-teal-600 font-medium">
+                                        {emailState.status.sent} sent
+                                    </span>
+                                    {emailState.status.failed > 0 && (
+                                        <span className="text-red-500 font-medium">
+                                            {emailState.status.failed} failed
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             )}

@@ -13,6 +13,7 @@ async function upsertEmployees(rows) {
         'date_of_birth',
         'date_of_joining',
         'date_of_retirement',
+        'email',
     ];
 
     const values = [];
@@ -29,6 +30,7 @@ async function upsertEmployees(rows) {
             row.date_of_birth,
             row.date_of_joining,
             row.date_of_retirement,
+            row.email,
         );
         return `(${columns.map((_, j) => `$${base + j + 1}`).join(',')})`;
     });
@@ -44,7 +46,8 @@ async function upsertEmployees(rows) {
            account_no=EXCLUDED.account_no,
            date_of_birth=EXCLUDED.date_of_birth,
            date_of_joining=EXCLUDED.date_of_joining,
-           date_of_retirement=EXCLUDED.date_of_retirement;`;
+           date_of_retirement=EXCLUDED.date_of_retirement,
+           email=EXCLUDED.email;`;
 
     await pool.query(query, values);
 }
@@ -83,6 +86,7 @@ async function updateEmployeeById(id, data) {
         data.date_of_retirement,
         data.nature_of_appointment,
         data.pin_code,
+        data.email,
         id,
     ];
     const query = `
@@ -97,8 +101,9 @@ async function updateEmployeeById(id, data) {
           date_of_joining = $7,
           date_of_retirement = $8,
           nature_of_appointment = $9,
-          pin_code = $10
-        WHERE id = $11
+          pin_code = $10,
+          email = $11
+        WHERE id = $12
         RETURNING id;
         `;
 

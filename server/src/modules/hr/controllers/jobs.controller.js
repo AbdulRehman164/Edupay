@@ -25,18 +25,29 @@ async function activeJobsController(req, res, next) {
             'waiting',
             'active',
             'delayed',
+            'completed',
         ]);
 
-        const userJobs = jobs
-            .filter((job) => job.data.userId === req.user.id)
-            .map(async (job) => ({
-                jobId: job.id,
-                type: job.name,
-                status: await job.getState(),
-                downloadId: job.data.downloadId,
-            }));
+        const job = jobs
+            .filter(
+                (job) =>
+                    job.name === 'generate-for-upload' &&
+                    job.data.userId === req.user.id,
+            )
+            .sort((a, b) => b.timestamp - a.timestamp)[0];
 
-        res.json(await Promise.all(userJobs));
+        if (!job) {
+            return res.status(404).json({
+                message: 'No job found',
+            });
+        }
+
+        res.json({
+            jobId: job.id,
+            type: job.name,
+            status: await job.getState(),
+            downloadId: job.data.downloadId,
+        });
     } catch (e) {
         next(e);
     }

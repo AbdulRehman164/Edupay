@@ -12,6 +12,7 @@ const FIELDS = {
         placeholder: '12345-1234567-1',
     },
     date_of_birth: { label: 'Date of Birth', type: 'date', group: 'personal' },
+    email: { label: 'Email', type: 'email', group: 'personal' },
     designation: { label: 'Designation', type: 'text', group: 'employment' },
     bps: { label: 'BPS', type: 'number', group: 'employment' },
     nature_of_appointment: {

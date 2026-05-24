@@ -10,46 +10,42 @@ import { payslipQueue } from '../../../queues/index.js';
 import hasActiveJob from '../utils/hasActiveJob.js';
 
 async function generatePayslipArchive(payslips, zipname, signal) {
-    const outputPath = 'generated/';
+    const outputPath = `generated/${zipname}`;
     const files = [];
 
-    await fs.promises.mkdir(outputPath, { recursive: true });
+    await fs.promises.mkdir(path.join(outputPath, '/pdfs'), {
+        recursive: true,
+    });
 
     // Ensure cleanup ALWAYS happens
-    try {
+    signal?.throwIfAborted();
+
+    for (let i = 0; i < payslips.length; i += 30) {
         signal?.throwIfAborted();
 
-        for (let i = 0; i < payslips.length; i += 30) {
+        const batch = payslips.slice(i, i + 30);
+
+        for (const e of batch) {
             signal?.throwIfAborted();
 
-            const batch = payslips.slice(i, i + 30);
+            const template = generatePayslipTemplate(e);
 
-            for (const e of batch) {
-                signal?.throwIfAborted();
+            const file = await renderPdf(
+                template,
+                path.join(outputPath, '/pdfs'),
+                `${e.name}_${e.cnic_no}_${e.month}_${e.year}`,
+                signal,
+            );
 
-                const template = generatePayslipTemplate(e);
-
-                const file = await renderPdf(
-                    template,
-                    outputPath,
-                    `${e.name}_${e.cnic_no}_${e.month}_${e.year}`,
-                    signal,
-                );
-
-                files.push(file);
-            }
+            files.push(file);
         }
-
-        signal?.throwIfAborted();
-
-        await zipFiles(path.join(outputPath, zipname), files, signal);
-
-        return zipname;
-    } finally {
-        await Promise.allSettled(
-            files.map((file) => fs.promises.rm(file, { force: true })),
-        );
     }
+
+    signal?.throwIfAborted();
+
+    await zipFiles(path.join(outputPath, zipname), files, signal);
+
+    return zipname;
 }
 
 async function generateForUpload(batchId, downloadId, signal) {

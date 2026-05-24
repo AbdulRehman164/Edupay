@@ -4,6 +4,7 @@ import AppError from '../../../shared/utils/AppError.js';
 import excelToJson from '../utils/excelToJson.js';
 
 function validateData(data) {
+    console.log(data);
     const infoHeaders = [
         'name',
         'pin_code',
@@ -15,14 +16,17 @@ function validateData(data) {
         'date_of_birth',
         'date_of_joining',
         'date_of_retirement',
+        'email',
     ];
     for (const e of data) {
         infoHeaders.forEach((header) => {
-            if (!e?.[header])
+            if (!e?.[header]) {
+                console.log(header);
                 throw new AppError(
                     'File has missing columns or null values',
                     400,
                 );
+            }
         });
     }
 }
