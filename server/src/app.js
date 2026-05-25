@@ -62,7 +62,7 @@ app.use('/api/admin', requireRole('admin'), adminRoutes);
 //accounts
 app.use('/api/accounts', requireRole('accounts', 'data_entry'), accountRoutes);
 
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`App running at ${port}`));
