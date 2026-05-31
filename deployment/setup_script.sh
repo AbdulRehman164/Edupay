@@ -28,10 +28,6 @@ sudo apt install -y nodejs
 echo "Installing PM2..."
 sudo npm install -g pm2
 
-echo "Creating app directory..."
-sudo mkdir -p $APP_DIR
-sudo chown -R $APP_USER:$APP_USER $APP_DIR
-
 echo "Setting up PostgreSQL..."
 
 sudo -u postgres psql <<EOF
