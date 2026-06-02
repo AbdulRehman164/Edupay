@@ -37,7 +37,7 @@ echo "Reloading nginx..."
 sudo systemctl reload nginx
 
 echo "Starting PM2..."
-cd ../server
+cd ../deployment
 
 pm2 start ecosystem.config.cjs || pm2 restart ecosystem.config.cjs
 
