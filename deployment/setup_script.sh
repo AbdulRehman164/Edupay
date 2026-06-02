@@ -39,10 +39,10 @@ EOF
 
 echo "Creating schema_migrations table..."
 
-sudo -u postgres psql -d $DB_NAME <<EOF
-CREATE TABLE IF NOT EXISTS schema_migrations (
-    version TEXT PRIMARY KEY,
-    applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+PGPASSWORD="$DB_PASSWORD" psql -h localhost -U $DB_USER -d $DB_NAME <<EOF
+ CREATE TABLE IF NOT EXISTS schema_migrations (
+     version TEXT PRIMARY KEY,
+     applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 EOF
 
