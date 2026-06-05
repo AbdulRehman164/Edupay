@@ -14,7 +14,14 @@ async function createBatchController(req, res, next) {
 async function searchBatchesController(req, res, next) {
     try {
         const search = req.query?.search?.trim() || '';
-        const result = await batchRepo.search({ search });
+        const status = req.query?.status?.trim() || '';
+        const formation_finalized =
+            req.query?.formation_finalized?.trim() || '';
+        const result = await batchRepo.search({
+            search,
+            status,
+            formation_finalized,
+        });
         res.json(result);
     } catch (e) {
         next(e);
@@ -58,10 +65,21 @@ async function downloadFormationController(req, res, next) {
     }
 }
 
+async function finalizeFormationController(req, res, next) {
+    try {
+        const id = req.params?.id;
+        const result = await batchRepo.finalizeFormation(id);
+        res.json(`${result} formation finalized.`);
+    } catch (e) {
+        next(e);
+    }
+}
+
 export {
     createBatchController,
     searchBatchesController,
     getBatchesStatsController,
     closeBatchController,
     downloadFormationController,
+    finalizeFormationController,
 };

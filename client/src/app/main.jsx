@@ -22,6 +22,7 @@ import NotFound from '../pages/notFound';
 import AdminUsersPage from '../domains/admin/AdminUsersPage';
 import AccountsDashbaord from '../domains/accounts/dashboard/AccountsDashboard';
 import Batch from '../domains/accounts/batch/Batch';
+import ClassFormations from '../domains/hr/ClassFormations';
 
 const accountsChildren = [
     {
@@ -93,6 +94,11 @@ const router = createBrowserRouter([
                                         element: <EmployeePayslips />,
                                     },
                                 ],
+                            },
+
+                            {
+                                path: 'class_formations',
+                                element: <ClassFormations />,
                             },
                         ],
                     },

@@ -7,6 +7,7 @@ import {
     getBatchesStatsController,
     closeBatchController,
     downloadFormationController,
+    finalizeFormationController,
 } from '../controllers/batch.controller.js';
 import validateBatchPayload from '../middleware/validateBatchPayload.middleware.js';
 
@@ -32,6 +33,13 @@ batchesRoutes.patch(
     '/:id/close',
     requireRole('data_entry'),
     closeBatchController,
+);
+
+// accounts only
+batchesRoutes.patch(
+    '/:id/finalize_formation',
+    requireRole('accounts'),
+    finalizeFormationController,
 );
 
 export default batchesRoutes;

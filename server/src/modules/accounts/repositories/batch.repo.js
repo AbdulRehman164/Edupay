@@ -20,16 +20,25 @@ async function create({ semester, year, department, section, created_by }) {
     }
 }
 
-async function search({ search }) {
+async function search({ search, status, formation_finalized }) {
     const conditions = [];
     const values = [];
     let i = 1;
 
     if (search) {
-        conditions.push(`s.reg_number ILIKE $${i} or s.name ILIKE $${i++}`);
+        conditions.push(
+            `s.reg_number ILIKE $${i} or s.name ILIKE $${i} or b.department ILIKE $${i++}`,
+        );
         values.push(`%${search}%`);
     }
-    conditions.push(`b.status = 'open'`);
+    if (status) {
+        conditions.push(`b.status = $${i++}`);
+        values.push(status);
+    }
+    if (formation_finalized) {
+        conditions.push(`b.formation_finalized = $${i++}`);
+        values.push(formation_finalized);
+    }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const query = `
@@ -70,6 +79,14 @@ async function getEligibleStudentsByBatch(batchId) {
     );
     return rows;
 }
+
+async function finalizeFormation(id) {
+    const result = await pool.query(
+        'UPDATE ug_batch SET formation_finalized=true::BOOLEAN WHERE id=$1',
+        [id],
+    );
+    return result.rowCount;
+}
 export default {
     create,
     search,
@@ -77,4 +94,5 @@ export default {
     closeBatch,
     getById,
     getEligibleStudentsByBatch,
+    finalizeFormation,
 };

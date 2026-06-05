@@ -4,8 +4,8 @@ import BatchUploadButton from './BatchUploadButton';
 import BatchStudents from './BatchStudents';
 import AddStudentModal from './AddStudentModal';
 import CloseBatchButton from './CloseBatchButton';
-import DownloadClassFormationButton from './DwonloadClassFormationButton';
 import { useAuth } from '../../../auth/AuthContext';
+import FinalizeFormationButton from './FinalizeFormationButton';
 
 function Batch() {
     const { id } = useParams();
@@ -51,6 +51,10 @@ function Batch() {
             {user.role === 'data_entry' && (
                 <BatchUploadButton fetchStudents={fetchStudents} batchId={id} />
             )}
+            {user.role === 'accounts' && (
+                // for ui consistency
+                <div className="max-w-6xl mx-auto px-6 pt-12"></div>
+            )}
             <div className="max-w-6xl mx-auto px-6 py-8">
                 {error && (
                     <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 mb-4">
@@ -85,7 +89,9 @@ function Batch() {
                     />
                 </>
             )}
-            {user.role === 'accounts' && <DownloadClassFormationButton />}
+            {user.role === 'accounts' && (
+                <FinalizeFormationButton setError={setError} />
+            )}
         </div>
     );
 }

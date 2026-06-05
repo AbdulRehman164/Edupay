@@ -18,7 +18,9 @@ export default function AccountsDashboard() {
         setError(null);
 
         try {
-            const res = await fetch(`/api/accounts/batches?search=${search}`);
+            const res = await fetch(
+                `/api/accounts/batches?search=${search}&${user.role === 'data_entry' ? 'status=open' : 'formation_finalized=false'}`,
+            );
 
             if (!res.ok) {
                 const err = await res.json();

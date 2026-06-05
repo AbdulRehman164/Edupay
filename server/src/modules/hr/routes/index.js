@@ -9,6 +9,8 @@ import {
     retryBatchEmailsController,
 } from '../controllers/emails.controller.js';
 import validateUUID from '../middleware/validateUUID.middleware.js';
+import { searchBatchesController } from '../../accounts/controllers/batch.controller.js';
+import { downloadFormationController } from '../../accounts/controllers/batch.controller.js';
 
 const hrRoutes = Router();
 
@@ -27,5 +29,8 @@ hrRoutes.post(
     validateUUID,
     retryBatchEmailsController,
 );
+
+hrRoutes.get('/formations', searchBatchesController);
+hrRoutes.get('/:id/download-formation', downloadFormationController);
 
 export default hrRoutes;

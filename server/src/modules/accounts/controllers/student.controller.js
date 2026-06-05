@@ -5,9 +5,11 @@ async function searchStudentsController(req, res, next) {
     try {
         const batchId = req.params?.id;
         const search = req.query?.search?.trim() || '';
+        const user = req.user;
         const result = await studentsServices.searchBatchStudents({
             batchId,
             search,
+            user,
         });
         res.json(result);
     } catch (e) {
