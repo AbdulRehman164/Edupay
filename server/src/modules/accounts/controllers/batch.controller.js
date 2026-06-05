@@ -68,7 +68,7 @@ async function downloadFormationController(req, res, next) {
 async function finalizeFormationController(req, res, next) {
     try {
         const id = req.params?.id;
-        const result = await batchRepo.finalizeFormation(id);
+        const result = await batchServices.finalizeFormation(id);
         res.json(`${result} formation finalized.`);
     } catch (e) {
         next(e);

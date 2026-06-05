@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
 import { ClipLoader } from 'react-spinners';
 import DownloadClassFormationButton from './DownloadClassFormationButton';
@@ -12,7 +11,6 @@ function ClassFormations() {
 
     const [searchInput, setSearchInput] = useState('');
     const searchTimeout = useRef();
-    const navigate = useNavigate();
 
     async function searchBatches(search = '') {
         setLoading(true);

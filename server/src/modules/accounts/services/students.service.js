@@ -1,27 +1,27 @@
 import studentRepo from '../repositories/student.repo.js';
 import assertFormationNotFinalized from './assertFormationNotFinalized.service.js';
-import assertOpenBatch from './assertOpenBatch.service.js';
+import assertBatchState from './assertBatchState.service.js';
 
 async function searchBatchStudents({ batchId, search, user }) {
     if (user.role === 'data_entry') {
-        await assertOpenBatch(batchId);
+        await assertBatchState(batchId, 'open');
     } else if (user.role === 'accounts') {
         await assertFormationNotFinalized(batchId);
     }
     return studentRepo.get({ batchId, search });
 }
 async function submitUg({ batchId, studentId, action }) {
-    await assertOpenBatch(batchId);
+    await assertBatchState(batchId, 'open');
     return studentRepo.ugSubmit({ id: studentId, action });
 }
 
 async function deleteStudent({ studentId, batchId }) {
-    await assertOpenBatch(batchId);
+    await assertBatchState(batchId, 'open');
     return studentRepo.remove(studentId);
 }
 
 async function addStudent({ data, batchId }) {
-    await assertOpenBatch(batchId);
+    await assertBatchState(batchId, 'open');
     return studentRepo.insertStudents({ data, batchId });
 }
 

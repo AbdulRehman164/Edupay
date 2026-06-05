@@ -19,7 +19,7 @@ export default function AccountsDashboard() {
 
         try {
             const res = await fetch(
-                `/api/accounts/batches?search=${search}&${user.role === 'data_entry' ? 'status=open' : 'formation_finalized=false'}`,
+                `/api/accounts/batches?search=${search}&${user.role === 'data_entry' ? 'status=open' : 'formation_finalized=false&status=close'}`,
             );
 
             if (!res.ok) {

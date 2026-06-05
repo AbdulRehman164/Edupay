@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 import batchRepo from '../repositories/batch.repo.js';
 import AppError from '../../../shared/utils/AppError.js';
+import assertBatchState from './assertBatchState.service.js';
 
 async function generateClassFormationSheet(batchId) {
     const [students, batch] = await Promise.all([
@@ -29,4 +30,10 @@ async function generateClassFormationSheet(batchId) {
     return { buffer, batch };
 }
 
-export default { generateClassFormationSheet };
+async function finalizeFormation(id) {
+    await assertBatchState(id, 'close');
+    const result = await batchRepo.finalizeFormation(id);
+    return result;
+}
+
+export default { generateClassFormationSheet, finalizeFormation };
